@@ -32,7 +32,6 @@ name = config.name
 links = []
 try:
     path = config.get_file(config.get_value('scripts'))
-    print(path)
     with open(path, "r") as file:
         data = yaml.safe_load(file.read())
         for title, info in data.items():
