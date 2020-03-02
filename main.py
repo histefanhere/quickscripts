@@ -3,14 +3,24 @@ import subprocess, json
 
 # Handle the parsing of the config file
 links = []
-with open("scripts.json", "rb") as file:
-    data = json.load(file)
-    for link in data:
-        links.append([
-            link['name'],
-            link['key'],
-            link['cmd'].split()
-        ])
+try:
+    with open("scripts.json", "rb") as file:
+        data = json.load(file)
+        for link in data:
+            links.append([
+                link['name'],
+                link['key'],
+                link['cmd'].split()
+            ])
+except FileNotFoundError:
+    print("ERROR: The scripts.json file is not found! Please check that it exists and try again.")
+    exit()
+except json.decoder.JSONDecodeError:
+    print("ERROR: There has been an error in the JSON syntax of scripts.json! Please check this and try again.")
+    exit()
+except Exception as e:
+    print("ERROR: There has been some sort of error in your scripts.json! Please check the example provided and try again.")
+    exit()
 
 class Application(tk.Frame):
     def __init__(self, master=None):
