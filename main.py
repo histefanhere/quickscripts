@@ -1,46 +1,41 @@
 import tkinter as tk
-import subprocess, json, argparse, os
+import subprocess, argparse, os, yaml
 
 parser = argparse.ArgumentParser(description="Quickly Run your favourite scripts and applications.\nFor aditional help, check the README.")
-parser.add_argument("--set_name", metavar="NAME", help="Sets the name for the script")
 args = parser.parse_args()
 
-# User wants to set the name of the script
-if args.set_name:
-    # Open file...
-    data = {}
-    if os.path.exists('data.json'):
-        with open('data.json', 'rb') as file:
-            data = json.load(file)
-    # Edit data...
-    data['name'] = args.set_name
-    # And save file!
-    with open('data.json', 'w+') as file:
-        json.dump(data, file)
-
-    print(f"Name has successfully been set to \"{args.set_name}\"! Use this when referencing this machine in your configuration file.")
-    exit()
-
+# Gets the name of the script from config.yaml
+name = None
+with open('config.yaml', 'r') as file:
+    data = yaml.safe_load(file.read())
+    if 'name' not in data:
+        print("ERROR: Name is not specified in config.yaml!")
+        exit()
+    name = data['name']
 
 # Handle the parsing of the config file
 links = []
 try:
-    with open("scripts.json", "rb") as file:
-        data = json.load(file)
-        for link in data:
+    with open("scripts.yaml", "r") as file:
+        data = yaml.safe_load(file.read())
+        for title, info in data.items():
+            key = info['key']
+            if isinstance(info['cmd'], str):
+                cmd = info['cmd']
+            else:
+                try:
+                    cmd = info['cmd'][name]
+                except KeyError:
+                    print(f"ERROR: for script '{title}' there does not exist a command for this machine! ({name})")
+                    exit()
+            
             links.append([
-                link['name'],
-                link['key'],
-                link['cmd'].split()
+                title,
+                key,
+                cmd.split()
             ])
 except FileNotFoundError:
     print("ERROR: The scripts.json file is not found! Please check that it exists and try again.")
-    exit()
-except json.decoder.JSONDecodeError:
-    print("ERROR: There has been an error in the JSON syntax of scripts.json! Please check this and try again.")
-    exit()
-except Exception as e:
-    print("ERROR: There has been some sort of error in your scripts.json! Please check the example provided and try again.")
     exit()
 
 class Application(tk.Frame):
@@ -51,17 +46,14 @@ class Application(tk.Frame):
 
     def createWidgets(self):
         text = ""
-        for name, key, command in links:
-            text += f"{key} -- {name}\n"
+        for title, key, command in links:
+            text += f"{key} -- {title}\n"
         self.text_label = tk.Label(self, text=text)
         self.text_label.pack()
 
         self.QUIT = tk.Button(self, text="QUIT (Or press q to quit)", fg="red",
                                             command=root.destroy)
         self.QUIT.pack(side="bottom")
-
-    def say_hi(self):
-        print("hi there, everyone!")
 
 root = tk.Tk()
 app = Application(master=root)
