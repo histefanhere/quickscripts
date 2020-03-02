@@ -26,8 +26,7 @@ try:
                 try:
                     cmd = info['cmd'][name]
                 except KeyError:
-                    print(f"ERROR: for script '{title}' there does not exist a command for this machine! ({name})")
-                    exit()
+                    continue
             
             links.append([
                 title,
