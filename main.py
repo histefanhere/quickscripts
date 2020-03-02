@@ -4,9 +4,12 @@ import subprocess, argparse, os, yaml
 parser = argparse.ArgumentParser(description="Quickly Run your favourite scripts and applications.\nFor aditional help, check the README.")
 args = parser.parse_args()
 
+def get_file(filename):
+    return os.path.join(os.path.dirname(__file__), filename)
+
 # Gets the name of the script from config.yaml
 name = None
-with open('config.yaml', 'r') as file:
+with open(get_file('config.yaml'), 'r') as file:
     data = yaml.safe_load(file.read())
     if 'name' not in data:
         print("ERROR: Name is not specified in config.yaml!")
@@ -16,7 +19,7 @@ with open('config.yaml', 'r') as file:
 # Handle the parsing of the config file
 links = []
 try:
-    with open("scripts.yaml", "r") as file:
+    with open(get_file("scripts.yaml"), "r") as file:
         data = yaml.safe_load(file.read())
         for title, info in data.items():
             key = info['key']
