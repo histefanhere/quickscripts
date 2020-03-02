@@ -1,5 +1,26 @@
 import tkinter as tk
-import subprocess, json
+import subprocess, json, argparse, os
+
+parser = argparse.ArgumentParser(description="Quickly Run your favourite scripts and applications.\nFor aditional help, check the README.")
+parser.add_argument("--set_name", metavar="NAME", help="Sets the name for the script")
+args = parser.parse_args()
+
+# User wants to set the name of the script
+if args.set_name:
+    # Open file...
+    data = {}
+    if os.path.exists('data.json'):
+        with open('data.json', 'rb') as file:
+            data = json.load(file)
+    # Edit data...
+    data['name'] = args.set_name
+    # And save file!
+    with open('data.json', 'w+') as file:
+        json.dump(data, file)
+
+    print(f"Name has successfully been set to \"{args.set_name}\"! Use this when referencing this machine in your configuration file.")
+    exit()
+
 
 # Handle the parsing of the config file
 links = []
