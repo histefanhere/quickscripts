@@ -4,22 +4,36 @@ import subprocess, argparse, os, yaml
 parser = argparse.ArgumentParser(description="Quickly Run your favourite scripts and applications.\nFor aditional help, check the README.")
 args = parser.parse_args()
 
-def get_file(filename):
-    return os.path.join(os.path.dirname(__file__), filename)
+class Config():
+    def get_file(self, filename):
+        return os.path.join(os.path.dirname(__file__), filename)
 
-# Gets the name of the script from config.yaml
-name = None
-with open(get_file('config.yaml'), 'r') as file:
-    data = yaml.safe_load(file.read())
-    if 'name' not in data:
-        print("ERROR: Name is not specified in config.yaml!")
-        exit()
-    name = data['name']
+    def __init__(self):
+        self.read_config()
 
-# Handle the parsing of the config file
+        self.name = self.get_value('name')
+
+    def read_config(self):
+        with open(self.get_file('config.yaml'), 'r') as file:
+            data = yaml.safe_load(file.read())
+            self.data = data
+
+    def get_value(self, value):
+        if value not in self.data:
+            raise ValueError(f"Value '{value}' is not defined in config.yaml!")
+            exit()
+        else:
+            return self.data[value]
+
+config = Config()
+name = config.name
+
+# Handle the parsing of the script file
 links = []
 try:
-    with open(get_file("scripts.yaml"), "r") as file:
+    path = config.get_file(config.get_value('scripts'))
+    print(path)
+    with open(path, "r") as file:
         data = yaml.safe_load(file.read())
         for title, info in data.items():
             key = info['key']
@@ -30,7 +44,7 @@ try:
                     cmd = info['cmd'][name]
                 except KeyError:
                     continue
-            
+
             links.append([
                 title,
                 key,
