@@ -15,7 +15,9 @@ Tested on both Windows and Linux. Requires python 3 and the following libraries:
 
 ## Installation & Setting up
 To install this script, simply clone this repository to anywhere on your local machine:
-```git clone https://www.github.com/histefanhere/quickscripts.git```
+```
+git clone https://www.github.com/histefanhere/quickscripts.git
+```
 Once all the python dependancies have been installed as per the Requirements section, you must create two files:
 - `config.yaml`
     This YAML configuration file _must be created in the same directory as the the script,_ and contains the unique "name" of the script/machine as well as the path to your `scripts.yaml` file (This can be an absolute or relative path).
