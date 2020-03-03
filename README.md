@@ -5,13 +5,8 @@ Quickly run your favourite applications and commands
 I started this project from a need to be able to start all my most used programs, scripts, webpages, as quickly as possible but without having to memorize dozens of hotkeys.
 The solution to this is to have _one_ hotkey which starts a GUI from which I can further select options for each of my programs. To make it simpler to use and configure, it is not only slightly cross-platform but also very easy to set-up and forget, use same config files across multiple machines, and more!
 
-<<<<<<< HEAD
-### Requirements
-Tested on both Windows and Linux. Requires Python 3 and the following libraries:
-=======
 ## Requirements
-Tested on both Windows and Linux. Requires python 3 and the following libraries:
->>>>>>> d5268ae449a88e1a48db176e6e7f1c935bacceb3
+Tested on both Windows and Linux. Requires Python 3 and the following libraries:
 - `argparse`
 - `PyYAML`
 - `TKinter` (Installation varies on OS and Distro)
@@ -31,7 +26,7 @@ Once all the python dependancies have been installed as per the Requirements sec
 
 Examples of _both_ these files can be found in the `examples` folder, so check these before creating your own. In these examples are also explained all the different usecases of the program, so it is highly recommended to read through them.
 
-### Why do I need to provide a `name`?
+## Why do I need to provide a `name`?
 While desigining the configuration file strucutres, I had the idea in mind that a single `scripts.yaml` file can be used across multiple different machines with different file structures, different program names and even entirely different OS's.
 To be able to do this, each machine needs its own unique identifier - the `name` parameter. For examples of this in action, please refer to the `exampels/scripts.yaml` file.
 
@@ -40,7 +35,7 @@ To be able to do this, each machine needs its own unique identifier - the `name`
 - MacOS Support?
 - Write good code.
 
-### Actual TODO list of things I need to do
+## Actual TODO list of things I need to do
 -[ ] Warn user about using the "q" key
 -[ ] Have a command line option for testing config and scripts.yaml files
 -[ ] Make UI look good
