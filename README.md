@@ -1,11 +1,11 @@
 # quickscripts
 Quickly run your favourite applications and commands
 
-### What?
+## What?
 I started this project from a need to be able to start all my most used programs, scripts, webpages, as quickly as possible but without having to memorize dozens of hotkeys.
 The solution to this is to have _one_ hotkey which starts a GUI from which I can further select options for each of my programs.
 
-### Requirements
+## Requirements
 Tested on both Windows and Linux. Requires python 3 and the following libraries:
 - `argparse`
 - `PyYAML`
@@ -13,7 +13,7 @@ Tested on both Windows and Linux. Requires python 3 and the following libraries:
 
 **NOTE:** The python script does _not_ handle the hotkey triggering natively (yet). So to enable this, I recommend using `AutoHotKey` for Windows or `xbindkeys` for Linux. The `hotkeys` directory includes some example scripts for these programs. **ASSIGN OTHER HOTKEYS AT YOUR OWN RISK**
 
-### Installation & Setting up
+## Installation & Setting up
 To install this script, simply clone this repository to anywhere on your local machine:
 ```git clone https://www.github.com/histefanhere/quickscripts.git```
 Once all the python dependancies have been installed as per the Requirements section, you must create two files:
@@ -24,6 +24,6 @@ Once all the python dependancies have been installed as per the Requirements sec
 
 Examples of _both_ these files can be found in the `examples` folder, so check these before creating your own. In these examples are also explained all the different usecases of the program, so it is highly recommended to read through them.
 
-### List of things I'm never going to end up doing:
+## List of things I'm never going to end up doing:
 - Use https://github.com/boppreh/keyboard#keyboard.wait so that no external program is needed for hotkeys
 - Write good code.
