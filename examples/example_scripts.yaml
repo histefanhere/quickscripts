@@ -1,0 +1,35 @@
+##########################
+#
+# TITLE:        example_scripts.yaml
+# DESCRIPTION:  Example scripts configuration
+# AUTHOR:       Stefan Zdravkovic
+# LINK:         https://www.github.com/histefanhere/quickscripts
+#
+##########################
+
+# ALLOWED KEYS: Only the a-z keys have been tested, however more may work.
+# BE CAREFUL WHEN PLAYING WITH THIS, ONLY USE KEYS WHICH HAVE BEEN TESTED.
+
+# This is the most basic kind of use, where a key will always trigger the same command.
+# You specify the `key` which will trigger the command, and the `cmd` itself.
+# The same command will be executed across all machines this is configured in.
+# (Most useful if you only have one machine, or a command is identical across mutliple)
+Browser:
+  key: b
+  cmd: /your/path/to/anything/if/required/firefox.exe
+
+# If however you have multiple machines with different OS's on them which run commands differently...
+# ...you can specify the machines names as sub categories to the `cmd`, and each machine will run their...
+# ...coresponding commands.
+Facebook:
+  key: f
+  cmd:
+    first_machine: C:\Program Files\thebestgame.exe
+    second_machine: sh /home/user/games/thebestgame.sh
+
+# You may also have some scripts which you only have on one machine. In that case, you can _only_ specify...
+# ...that machine and the quickscript will not be visible on all other machines.
+The Best Video Game:
+  key: v
+  cmd:
+    first_machine: C:\Program Files\TheBestVideoGame.exe
