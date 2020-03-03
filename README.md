@@ -1,21 +1,28 @@
 # quickscripts
 Quickly run your favourite applications and commands
 
-### What?
+## What?
 I started this project from a need to be able to start all my most used programs, scripts, webpages, as quickly as possible but without having to memorize dozens of hotkeys.
 The solution to this is to have _one_ hotkey which starts a GUI from which I can further select options for each of my programs. To make it simpler to use and configure, it is not only slightly cross-platform but also very easy to set-up and forget, use same config files across multiple machines, and more!
 
+<<<<<<< HEAD
 ### Requirements
 Tested on both Windows and Linux. Requires Python 3 and the following libraries:
+=======
+## Requirements
+Tested on both Windows and Linux. Requires python 3 and the following libraries:
+>>>>>>> d5268ae449a88e1a48db176e6e7f1c935bacceb3
 - `argparse`
 - `PyYAML`
 - `TKinter` (Installation varies on OS and Distro)
 
 **NOTE:** The python script does _not_ handle the hotkey triggering natively (yet). So to enable this, I recommend using `AutoHotKey` for Windows or `xbindkeys` for Linux. The `hotkeys` directory includes some example scripts for these programs. **ASSIGN OTHER HOTKEYS AT YOUR OWN RISK**
 
-### Installation & Setting up
+## Installation & Setting up
 To install this script, simply clone this repository to anywhere on your local machine:
-```git clone https://www.github.com/histefanhere/quickscripts.git```
+```
+git clone https://www.github.com/histefanhere/quickscripts.git
+```
 Once all the python dependancies have been installed as per the Requirements section, you must create two files:
 - `config.yaml`
     This YAML configuration file _must be created in the same directory as the the script,_ and contains the unique "name" of the script/machine as well as the path to your `scripts.yaml` file (This can be an absolute or relative path).
@@ -28,7 +35,7 @@ Examples of _both_ these files can be found in the `examples` folder, so check t
 While desigining the configuration file strucutres, I had the idea in mind that a single `scripts.yaml` file can be used across multiple different machines with different file structures, different program names and even entirely different OS's.
 To be able to do this, each machine needs its own unique identifier - the `name` parameter. For examples of this in action, please refer to the `exampels/scripts.yaml` file.
 
-### List of things I'm never going to end up doing
+## List of things I'm never going to end up doing
 - Use https://github.com/boppreh/keyboard#keyboard.wait so that no external program is needed for hotkeys
 - MacOS Support?
 - Write good code.
