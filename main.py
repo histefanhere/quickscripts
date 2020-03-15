@@ -53,25 +53,26 @@ except FileNotFoundError:
     print("ERROR: The scripts.json file is not found! Please check that it exists and try again.")
     exit()
 
+bg = '#f0f0f0'
 class Application(tk.Frame):
-    def __init__(self, master=None):
-        tk.Frame.__init__(self, master, padx=30, pady=30)
+    def __init__(self, root):
+        tk.Frame.__init__(self, root, padx=20, pady=20, bg=bg)
+        self.createWidgets(root)
         self.pack()
-        self.createWidgets()
 
-    def createWidgets(self):
-        text = ""
+    def createWidgets(self, root):
+        i = 0
         for title, key, command in links:
-            text += f"{key} -- {title}\n"
-        self.text_label = tk.Label(self, text=text)
-        self.text_label.pack()
+            tk.Label(self, text=key.upper(), font=("helvetica", 18), anchor="e", bg=bg).grid(row=i, column=0, sticky="E", pady=5)
+            tk.Label(self, text=title, font=("helvetica", 12), bg=bg).grid(row=i, column=1, sticky="W", padx=5)
+            i += 1
 
         self.QUIT = tk.Button(self, text="QUIT (Or press q to quit)", fg="red",
                                             command=root.destroy)
-        self.QUIT.pack(side="bottom")
+        self.QUIT.grid(row=i, column=0, columnspan=2)
 
 root = tk.Tk()
-app = Application(master=root)
+app = Application(root)
 
 def parse_key(event):
     if event.char == "q":
@@ -84,5 +85,5 @@ def parse_key(event):
 
 root.bind("<Key>", parse_key)
 
-app.mainloop()
+root.mainloop()
 
