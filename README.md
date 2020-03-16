@@ -1,6 +1,8 @@
 # quickscripts
 Quickly run your favourite applications and commands, from anywhere!
 
+![Absolutely Awesome Screenshot](screenshot.png)
+
 ## What?
 I started this project from a need to be able to start all my most used programs, scripts, webpages, as quickly as possible but without having to memorize dozens of hotkeys.
 The solution to this is to have _one_ hotkey which starts a GUI from which I can further select options for each of my programs. To make it simpler to use and configure, it is not only slightly cross-platform but also very easy to set-up and forget, use same config files across multiple machines, and more!
