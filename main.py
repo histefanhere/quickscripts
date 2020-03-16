@@ -19,6 +19,20 @@ class Config():
             data = yaml.safe_load(file.read())
             self.data = data
 
+        with open(self.get_file(self.get_value('scripts')), 'r') as file:
+            scripts = yaml.safe_load(file.read())
+            self.scripts = {key: value for key, value in scripts.items() if key != "config"}
+            
+            self.data['config'] = {}
+            if 'config' in scripts:
+                self.data['config'] = scripts['config']
+
+    def get_config(self, value, default):
+        if value not in self.data['config']:
+            return default
+        else:
+            return self.data['config'][value]
+
     def get_value(self, value):
         if value not in self.data:
             raise ValueError(f"ERROR: Value '{value}' is not defined in config.yaml!")
@@ -31,31 +45,24 @@ name = config.name
 
 # Handle the parsing of the script file
 links = []
-try:
-    path = config.get_file(config.get_value('scripts'))
-    with open(path, "r") as file:
-        data = yaml.safe_load(file.read())
-        for title, info in data.items():
-            key = info['key']
-            if key.lower() == "q":
-                raise KeyError(f"ERROR: It is forbidden to use the key 'q' for any quickscript!")
-                exit()
-            if isinstance(info['cmd'], str):
-                cmd = info['cmd']
-            else:
-                try:
-                    cmd = info['cmd'][name]
-                except KeyError:
-                    continue
+for title, info in config.scripts.items():
+    key = info['key']
+    if key.lower() == "q":
+        raise KeyError(f"ERROR: It is forbidden to use the key 'q' for any quickscript!")
+        exit()
+    if isinstance(info['cmd'], str):
+        cmd = info['cmd']
+    else:
+        try:
+            cmd = info['cmd'][name]
+        except KeyError:
+            continue
 
-            links.append([
-                title,
-                key,
-                cmd.split()
-            ])
-except FileNotFoundError:
-    print("ERROR: The scripts.json file is not found! Please check that it exists and try again.")
-    exit()
+    links.append([
+        title,
+        key,
+        cmd.split()
+    ])
 
 if args.check:
     print("Check passed, all config files are okay!")
@@ -111,15 +118,16 @@ def parse_key(event):
 
 root.bind("<Key>", parse_key)
 
-# LINUX - borderless
-# root.attributes('-type', 'dock')
-
 # WINDOWS & LINUX - forcing focus
 root.wm_attributes("-topmost", 1)
 root.focus_force()
 
-# WINDOWS - borderless
-# root.overrideredirect(True)
+borderless = config.get_config('borderless', 0)
+if borderless == 1:
+    # LINUX
+    root.attributes('-type', 'dock')
+elif borderless == 2: 
+    # WINDOWS
+    root.overrideredirect(True)
 
 root.mainloop()
-
