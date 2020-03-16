@@ -10,12 +10,17 @@
 # Here you can specify some additional configuration that will alter the behaviour of the program.
 # Obviously, because of this you can't have a quickscript called "config"
 config:
-  # Specifies wether the window will have a border or not. Looks _a lot_ nicer without it, but can be finiky sometimes
-  # Depending on your system, you will have to use either 1 or 2.
-  # 0 - DEFAULT VALUE - Will have a border and behave as normal.
-  # 1 - No border, will also snap to the corner for some reason. LINUX ONLY
-  # 2 - No border. WINDOWS ONLY
-  borderless: 1
+  # Here you can define options which will affect all machines:
+  awesomeness: 100
+  
+  # Or you can sub-categorize them by their machine names:
+  my_windows_computer:
+    # Specifies wether the window will have a border or not. Looks _a lot_ nicer without it, but can be finiky sometimes
+    # Depending on your system, you will have to use either 1 or 2.
+    # 0 - DEFAULT VALUE - Will have a border and behave as normal.
+    # 1 - No border, will also snap to the corner for some reason. LINUX ONLY
+    # 2 - No border. WINDOWS ONLY
+    borderless: 0
 
 
 
@@ -36,12 +41,12 @@ Browser:
 Facebook:
   key: f
   cmd:
-    first_machine: C:\Program Files\facebook.exe
-    second_machine: sh /home/user/games/facebook.sh
+    my_windows_computer: C:\Program Files\facebook.exe
+    my_linux_machine: sh /home/user/games/facebook.sh
 
 # You may also have some scripts which you only have on one machine. In that case, you can _only_ specify...
 # ...that machine and the quickscript will not be visible on all other machines.
 The Best Video Game:
   key: v
   cmd:
-    first_machine: C:\Program Files\TheBestVideoGame.exe
+    my_windows_computer: C:\Program Files\TheBestVideoGame.exe

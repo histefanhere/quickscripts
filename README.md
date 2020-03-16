@@ -26,6 +26,12 @@ Once all the python dependancies have been installed as per the Requirements sec
 
 Examples of _both_ these files can be found in the `examples` folder, so check these before creating your own. In these examples are also explained all the different usecases of the program, so it is highly recommended to read through them.
 
+An even easier solution is to just copy them out of the examples folder and use them as a foundation:
+```
+cp ../example_config.yaml ./config.yaml
+cp ../example_scripts.yaml ./scripts.yaml
+```
+
 ## Why do I need to provide a `name`?
 While desigining the configuration file strucutres, I had the idea in mind that a single `scripts.yaml` file can be used across multiple different machines with different file structures, different program names and even entirely different OS's.
 To be able to do this, each machine needs its own unique identifier - the `name` parameter. For examples of this in action, please refer to the `exampels/scripts.yaml` file.

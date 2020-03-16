@@ -29,9 +29,12 @@ class Config():
 
     def get_config(self, value, default):
         if value not in self.data['config']:
-            return default
+            if self.name in self.data['config']:
+                if value in self.data['config'][self.name]:
+                    return self.data['config'][self.name][value]    
         else:
             return self.data['config'][value]
+        return default
 
     def get_value(self, value):
         if value not in self.data:
