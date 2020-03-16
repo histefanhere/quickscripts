@@ -40,3 +40,4 @@ To be able to do this, each machine needs its own unique identifier - the `name`
 -[ ] Have a command line option for testing config and scripts.yaml files
 -[ ] Make UI look good
 -[ ] Support for cycling through multiple screens/tabs of keys?
+-[ ] Dark mode config, automatic timed selection?
