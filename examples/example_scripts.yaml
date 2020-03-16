@@ -7,6 +7,18 @@
 #
 ##########################
 
+# Here you can specify some additional configuration that will alter the behaviour of the program.
+# Obviously, because of this you can't have a quickscript called "config"
+config:
+  # Specifies wether the window will have a border or not. Looks _a lot_ nicer without it, but can be finiky sometimes
+  # Depending on your system, you will have to use either 1 or 2.
+  # 0 - DEFAULT VALUE - Will have a border and behave as normal.
+  # 1 - No border, will also snap to the corner for some reason. LINUX ONLY
+  # 2 - No border. WINDOWS ONLY
+  borderless: 1
+
+
+
 # ALLOWED KEYS: Only the a-z keys have been tested, however more may work.
 # BE CAREFUL WHEN PLAYING WITH THIS, ONLY USE KEYS WHICH HAVE BEEN TESTED.
 
@@ -24,8 +36,8 @@ Browser:
 Facebook:
   key: f
   cmd:
-    first_machine: C:\Program Files\thebestgame.exe
-    second_machine: sh /home/user/games/thebestgame.sh
+    first_machine: C:\Program Files\facebook.exe
+    second_machine: sh /home/user/games/facebook.sh
 
 # You may also have some scripts which you only have on one machine. In that case, you can _only_ specify...
 # ...that machine and the quickscript will not be visible on all other machines.
