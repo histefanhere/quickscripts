@@ -62,9 +62,10 @@ class Application(tk.Frame):
 
     def createWidgets(self, root):
         i = 0
+        n = 5
         for title, key, command in links:
-            tk.Label(self, text=key.upper(), font=("helvetica", 18), anchor="e", bg=bg).grid(row=i, column=0, sticky="E", pady=5)
-            tk.Label(self, text=title, font=("helvetica", 12), bg=bg).grid(row=i, column=1, sticky="W", padx=5)
+            tk.Label(self, text=key.upper(), font=("helvetica", 18), anchor="e", bg=bg).grid(row=(i%n), column=(i//n)*2, sticky="E", pady=5)
+            tk.Label(self, text=title, font=("helvetica", 12), bg=bg).grid(row=(i%n), column=1+(i//n)*2, sticky="W", padx=5)
             i += 1
 
         self.quit = tk.StringVar()
