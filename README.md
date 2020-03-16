@@ -19,25 +19,32 @@ Tested on both Windows and Linux. Requires Python 3 and the following libraries:
 To install this script, simply clone this repository to anywhere on your local machine:
 ```
 git clone https://www.github.com/histefanhere/quickscripts.git
-```
-Once all the python dependancies have been installed as per the Requirements section, you must create two files:
-- `config.yaml`
-    This YAML configuration file _must be created in the same directory as the the script,_ and contains the unique "name" of the script/machine as well as the path to your `scripts.yaml` file (This can be an absolute or relative path).
-- `scripts.yaml`
-    This is the YAML file where all your scripts will be stored. It is recommended to be located in the same path as the script, however this is totally configurable in the `config.yaml` file if you wish for it to be located elsewhere (even the name of the file is changeable if you'd prefer a `.scripts.yaml`, for example)
-
-Examples of _both_ these files can be found in the `examples` folder, so check these before creating your own. In these examples are also explained all the different usecases of the program, so it is highly recommended to read through them.
-
-An even easier solution is to just copy them out of the examples folder and use them as a foundation:
-```
 cd quickscripts
-cp examples/example_config.yaml ./config.yaml
-cp examples/example_scripts.yaml ./scripts.yaml
+```
+Once all the python dependancies have been installed as per the Requirements section, you will run the following commands to configure the python script:
+```
+python main.py --set scripts <PATH TO SCRIPTS FILE HERE>
+# This is only really neccessary if you plan on using your config file across multiple devices - read on for more info
+python main.py --set name <ENTER NAME HERE>
+```
+
+To check that the parameters have been correctly set, you can call the script with the --set flag but with no arguments:
+```
+$ python main.py --set
+name = your_name_will_appear_here
+scripts = your_scripts_path_will_appear_here
+```
+Now you must create a `scripts.yaml` file, which is your configuration file where all your scripts will be stored. It is recommended to be located in the same path as the script, however this is totally configurable if you wish for it to be located elsewhere via the command above (even the name of the file is changeable if you'd prefer a `.scripts.yaml`, for example). An example of this file can be found in the `examples` folder, so check this before creating your own. In the examples is also explained all the different usecases of the program, so it is highly recommended to read through them.
+
+Once you've finished with the configuration, you can run a test of your files via the `check` flag:
+```
+$ python main.py --check
+Check passed, all config files are okay!
 ```
 
 ## Why do I need to provide a `name`?
 While desigining the configuration file strucutres, I had the idea in mind that a single `scripts.yaml` file can be used across multiple different machines with different file structures, different program names and even entirely different OS's.
-To be able to do this, each machine needs its own unique identifier - the `name` parameter. For examples of this in action, please refer to the `exampels/scripts.yaml` file.
+To be able to do this, each machine needs its own unique identifier - the `name` parameter. For examples of this in action, please refer to the `examples/scripts.yaml` file.
 
 ## List of things I'm never going to end up doing
 - Use https://github.com/boppreh/keyboard#keyboard.wait so that no external program is needed for hotkeys
