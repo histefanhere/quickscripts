@@ -41,7 +41,7 @@ To be able to do this, each machine needs its own unique identifier - the `name`
 - [ ] Test if keys are valid
 - [X] Make UI look good
 - [ ] Support for cycling through multiple screens/tabs of keys? Categories?
-- [ ] Option in config for borderless window mode
+- [X] Option in config for borderless window mode
 - [ ] Set name and scripts path via command line?
 - [ ] Dark mode config, automatic timed selection?
 
