@@ -37,6 +37,9 @@ try:
         data = yaml.safe_load(file.read())
         for title, info in data.items():
             key = info['key']
+            if key.lower() == "q":
+                raise KeyError(f"ERROR: It is forbidden to use the key 'q' for any quickscript!")
+                exit()
             if isinstance(info['cmd'], str):
                 cmd = info['cmd']
             else:

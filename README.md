@@ -36,8 +36,9 @@ To be able to do this, each machine needs its own unique identifier - the `name`
 - Write good code.
 
 ## Actual TODO list of things I need to do
-- [ ] Warn user about using the "q" key
-- [ ] Have a command line option for testing config and scripts.yaml files
+- [X] Warn user about using the "q" key
+- [X] Have a command line option for testing config and scripts.yaml files
+- [ ] Test if keys are valid
 - [X] Make UI look good
 - [ ] Support for cycling through multiple screens/tabs of keys? Categories?
 - [ ] Option in config for borderless window mode
