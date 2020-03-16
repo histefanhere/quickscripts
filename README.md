@@ -28,8 +28,9 @@ Examples of _both_ these files can be found in the `examples` folder, so check t
 
 An even easier solution is to just copy them out of the examples folder and use them as a foundation:
 ```
-cp ../example_config.yaml ./config.yaml
-cp ../example_scripts.yaml ./scripts.yaml
+cd quickscripts
+cp examples/example_config.yaml ./config.yaml
+cp examples/example_scripts.yaml ./scripts.yaml
 ```
 
 ## Why do I need to provide a `name`?
