@@ -53,7 +53,7 @@ except FileNotFoundError:
     print("ERROR: The scripts.json file is not found! Please check that it exists and try again.")
     exit()
 
-bg = '#f0f0f0'
+bg = '#ffffff'
 class Application(tk.Frame):
     def __init__(self, root):
         tk.Frame.__init__(self, root, padx=20, pady=20, bg=bg)
@@ -84,6 +84,11 @@ def parse_key(event):
             root.destroy()
 
 root.bind("<Key>", parse_key)
+
+# root.overrideredirect(True)
+root.attributes('-type', 'dock')
+root.focus_force()
+
 
 root.mainloop()
 
