@@ -111,20 +111,15 @@ def parse_key(event):
 
 root.bind("<Key>", parse_key)
 
-# root.update_idletasks()
-# Um what does this even do
-# Make the window in "windowless" mode
+# LINUX - borderless
 # root.attributes('-type', 'dock')
 
-# WINDOWS - forcing focus
+# WINDOWS & LINUX - forcing focus
 root.wm_attributes("-topmost", 1)
 root.focus_force()
 
 # WINDOWS - borderless
-root.overrideredirect(True)
-
-# root.after(2000, lambda: root.focus_force())
-
+# root.overrideredirect(True)
 
 root.mainloop()
 
