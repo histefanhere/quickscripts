@@ -2,6 +2,7 @@ import tkinter as tk
 import subprocess, argparse, os, yaml, time
 
 parser = argparse.ArgumentParser(description="Quickly Run your favourite scripts and applications.\nFor aditional help, check the README.")
+parser.add_argument("--check", action="store_true", help="Check if the config files are valid")
 args = parser.parse_args()
 
 class Config():
@@ -20,7 +21,7 @@ class Config():
 
     def get_value(self, value):
         if value not in self.data:
-            raise ValueError(f"Value '{value}' is not defined in config.yaml!")
+            raise ValueError(f"ERROR: Value '{value}' is not defined in config.yaml!")
             exit()
         else:
             return self.data[value]
@@ -51,6 +52,10 @@ try:
             ])
 except FileNotFoundError:
     print("ERROR: The scripts.json file is not found! Please check that it exists and try again.")
+    exit()
+
+if args.check:
+    print("Check passed, all config files are okay!")
     exit()
 
 bg = '#ffffff'
