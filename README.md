@@ -1,5 +1,5 @@
 # quickscripts
-Quickly run your favourite applications and commands
+Quickly run your favourite applications and commands, from anywhere!
 
 ## What?
 I started this project from a need to be able to start all my most used programs, scripts, webpages, as quickly as possible but without having to memorize dozens of hotkeys.
@@ -36,8 +36,11 @@ To be able to do this, each machine needs its own unique identifier - the `name`
 - Write good code.
 
 ## Actual TODO list of things I need to do
--[ ] Warn user about using the "q" key
--[ ] Have a command line option for testing config and scripts.yaml files
--[ ] Make UI look good
--[ ] Support for cycling through multiple screens/tabs of keys?
--[ ] Dark mode config, automatic timed selection?
+- [ ] Warn user about using the "q" key
+- [ ] Have a command line option for testing config and scripts.yaml files
+- [ ] Make UI look good
+- [ ] Support for cycling through multiple screens/tabs of keys? Categories?
+- [ ] Option in config for borderless window mode
+- [ ] Set name and scripts path via command line?
+- [ ] Dark mode config, automatic timed selection?
+
