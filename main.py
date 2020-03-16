@@ -3,16 +3,58 @@ import subprocess, argparse, os, yaml, time
 
 parser = argparse.ArgumentParser(description="Quickly Run your favourite scripts and applications.\nFor aditional help, check the README.")
 parser.add_argument("--check", action="store_true", help="Check if the config files are valid")
+parser.add_argument("--set", nargs="*", metavar=('option', 'value'), help="Set some options of the script")
 args = parser.parse_args()
 
 class Config():
     def get_file(self, filename):
         return os.path.join(os.path.dirname(__file__), filename)
 
-    def __init__(self):
+    def __init__(self, arg):
+        if arg != None:
+            self.set_config(arg)
+
         self.read_config()
 
         self.name = self.get_value('name')
+
+    def set_config(self, arg):
+        if not os.path.exists('config.yaml'):
+            with open(self.get_file('testconfig.yaml'), 'w+') as file:
+                file.write('')
+
+        with open(self.get_file('config.yaml'), 'r+') as file:
+            data = yaml.safe_load(file.read())
+            if data == None:
+                data = {}
+
+        values = ["name", "scripts"]
+
+        if len(arg) == 0:
+            # User wants to check all values set
+            for val in values:
+                if val not in data:
+                    print(f"{val}: Not set!")
+                else:
+                    print(f"{val} = {data[val]}")
+        elif len(arg) == 1:
+            # Wants to check the value of a specific setting
+            if arg[0] not in values:
+                print(f"{arg[0]} is not a valid value!")
+            else:
+                print("Please specify the value to be set")
+        elif len(arg) >= 2:
+            # Wants to set a setting to a value
+            if arg[0] not in values:
+                print(f"{arg[0]} is not a valid value!")
+            else:
+                data[arg[0]] = " ".join(arg[1:])
+
+                with open(self.get_file('config.yaml'), 'w+') as file:
+                    file.write(yaml.dump(data))
+                print("Value `{}` was successfully set to `{}`!".format(arg[0], " ".join(arg[1:])))
+        # We don't want to run the code when the user is setting an option
+        exit()
 
     def read_config(self):
         with open(self.get_file('config.yaml'), 'r') as file:
@@ -22,7 +64,7 @@ class Config():
         with open(self.get_file(self.get_value('scripts')), 'r') as file:
             scripts = yaml.safe_load(file.read())
             self.scripts = {key: value for key, value in scripts.items() if key != "config"}
-            
+
             self.data['config'] = {}
             if 'config' in scripts:
                 self.data['config'] = scripts['config']
@@ -31,7 +73,7 @@ class Config():
         if value not in self.data['config']:
             if self.name in self.data['config']:
                 if value in self.data['config'][self.name]:
-                    return self.data['config'][self.name][value]    
+                    return self.data['config'][self.name][value]
         else:
             return self.data['config'][value]
         return default
@@ -43,7 +85,7 @@ class Config():
         else:
             return self.data[value]
 
-config = Config()
+config = Config(args.set)
 name = config.name
 
 # Handle the parsing of the script file
