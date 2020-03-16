@@ -1,5 +1,5 @@
 import tkinter as tk
-import subprocess, argparse, os, yaml
+import subprocess, argparse, os, yaml, time
 
 parser = argparse.ArgumentParser(description="Quickly Run your favourite scripts and applications.\nFor aditional help, check the README.")
 args = parser.parse_args()
@@ -67,11 +67,28 @@ class Application(tk.Frame):
             tk.Label(self, text=title, font=("helvetica", 12), bg=bg).grid(row=i, column=1, sticky="W", padx=5)
             i += 1
 
-        self.QUIT = tk.Button(self, text="QUIT (Or press q to quit)", fg="red",
-                                            command=root.destroy)
-        self.QUIT.grid(row=i, column=0, columnspan=2)
+        self.quit = tk.StringVar()
+        self.quit.set("QUIT (10)")
+        self.start_time = time.time()
+        # Quit Label and button
+        tk.Label(self, text="Q", font=("helvetica", 18), anchor="e", bg=bg, fg="red").grid(row=i, column=0, sticky="E", pady=5)
+        tk.Button(self, textvariable=self.quit, fg="red", font=("helvetica", 12), bg=bg,
+                                            command=root.destroy).grid(row=i, column=1, sticky="W", padx=5)
+
+        self.quit_timer(root)
+
+    def quit_timer(self, root):
+        # 20 and division by 2 so that the timer goes twice as slow - actually reduces stress!
+        new_time = round((20 - time.time() + self.start_time)/2)
+        if new_time == -1:
+            root.destroy()
+            exit()
+        if f"QUIT ({new_time})" != self.quit.get():
+            self.quit.set(f"QUIT ({new_time})")
+        root.after(100, lambda: self.quit_timer(root))
 
 root = tk.Tk()
+root.title("quickscripts")
 app = Application(root)
 
 def parse_key(event):
@@ -85,7 +102,9 @@ def parse_key(event):
 
 root.bind("<Key>", parse_key)
 
+# Um what does this even do
 # root.overrideredirect(True)
+# Make the window in "windowless" mode
 root.attributes('-type', 'dock')
 root.focus_force()
 
