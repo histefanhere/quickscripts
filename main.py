@@ -115,8 +115,8 @@ if args.check:
 
 if config.get_config("darkmode", 0):
     # Dark mode
-    bg = '#1f1f1f'
-    fg = '#d0d0d0'
+    bg = '#282828'
+    fg = '#d9d9d9'
 else:
     # LIGHT MODE
     bg = '#ffffff'
