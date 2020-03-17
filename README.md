@@ -48,16 +48,18 @@ To be able to do this, each machine needs its own unique identifier - the `name`
 
 ## List of things I'm never going to end up doing
 - Use https://github.com/boppreh/keyboard#keyboard.wait so that no external program is needed for hotkeys
+- Use https://github.com/moses-palmer/pystray So that the program runs constantly
 - MacOS Support?
 - Write good code.
 
 ## Actual TODO list of things I need to do
 - [X] Warn user about using the "q" key
 - [X] Have a command line option for testing config and scripts.yaml files
-- [ ] Test if keys are valid
+- [ ] Test if keys are valid / symbol support?
 - [X] Make UI look good
 - [ ] Support for cycling through multiple screens/tabs of keys? Categories?
 - [X] Option in config for borderless window mode
 - [X] Set name and scripts path via command line?
 - [X] Dark mode config, automatic timed selection?
 - [ ] Support for "shortcuts"/replacement formatting in scripts.yaml
+- [ ] GUI scripts.yaml editor
