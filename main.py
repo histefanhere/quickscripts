@@ -104,7 +104,7 @@ for title, info in config.scripts.items():
             continue
 
     for repl, repl_string in config.get_config('replace', {}).items():
-        cmd = cmd.replace(f"..{repl}..", repl_string)
+        cmd = cmd.replace(f"${repl}", repl_string)
 
     links.append([
         title,
