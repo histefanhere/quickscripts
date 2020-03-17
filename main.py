@@ -20,7 +20,7 @@ class Config():
 
     def set_config(self, arg):
         if not os.path.exists('config.yaml'):
-            with open(self.get_file('testconfig.yaml'), 'w+') as file:
+            with open(self.get_file('config.yaml'), 'w+') as file:
                 file.write('')
 
         with open(self.get_file('config.yaml'), 'r+') as file:
