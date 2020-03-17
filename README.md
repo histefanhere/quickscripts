@@ -60,4 +60,4 @@ To be able to do this, each machine needs its own unique identifier - the `name`
 - [X] Option in config for borderless window mode
 - [X] Set name and scripts path via command line?
 - [X] Dark mode config, automatic timed selection?
-
+- [ ] Support for "shortcuts"/replacement formatting in scripts.yaml
