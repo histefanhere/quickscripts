@@ -58,6 +58,6 @@ To be able to do this, each machine needs its own unique identifier - the `name`
 - [X] Make UI look good
 - [ ] Support for cycling through multiple screens/tabs of keys? Categories?
 - [X] Option in config for borderless window mode
-- [ ] Set name and scripts path via command line?
-- [ ] Dark mode config, automatic timed selection?
+- [X] Set name and scripts path via command line?
+- [X] Dark mode config, automatic timed selection?
 
