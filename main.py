@@ -113,13 +113,14 @@ if args.check:
     print("Check passed, all config files are okay!")
     exit()
 
-# LIGHT MODE
-#bg = '#ffffff'
-#fg = '#000000'
-
-# DARK MODE
-bg = '#1f1f1f'
-fg = '#d0d0d0'
+if config.get_config("darkmode", 0):
+    # Dark mode
+    bg = '#1f1f1f'
+    fg = '#d0d0d0'
+else:
+    # LIGHT MODE
+    bg = '#ffffff'
+    fg = '#000000'
 
 class Application(tk.Frame):
     def __init__(self, root):

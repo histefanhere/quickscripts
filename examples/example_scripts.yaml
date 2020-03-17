@@ -12,7 +12,11 @@
 config:
   # Here you can define options which will affect all machines:
   awesomeness: 100
-  
+
+  # 0 - DEFAULT VALUE - Light mode
+  # 1 - Dark mode
+  darkmode: 0
+
   # Or you can sub-categorize them by their machine names:
   my_windows_computer:
     # Specifies wether the window will have a border or not. Looks _a lot_ nicer without it, but can be finiky sometimes
