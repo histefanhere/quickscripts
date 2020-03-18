@@ -13,7 +13,7 @@ Tested on both Windows and Linux. Requires Python 3 and the following libraries:
 - `PyYAML`
 - `TKinter` (Installation varies on OS and Distro)
 
-The python script does _not_ handle the hotkey triggering natively (yet). So to enable this, I recommend using `AutoHotKey` for Windows or `xbindkeys` for Linux. The `hotkeys` directory includes some example scripts for these programs. **ASSIGN OTHER HOTKEYS AT YOUR OWN RISK**
+The script does not natively handle the hotkey triggering (yet). So to enable this, I recommend using [AutoHotKey](https://www.autohotkey.com/) for Windows or [xbindkeys](https://linux.die.net/man/1/xbindkeys) for Linux. The `hotkeys` directory includes some example scripts for these programs. **ASSIGN OTHER HOTKEYS AT YOUR OWN RISK**
 
 Sometimes, Python 3 will be installed under the command `python3` rather than `python`. Double check this and keep this in mind when running the commands below.
 
@@ -46,7 +46,7 @@ Check passed, all config files are okay!
 
 ## Why do I need to provide a `name`?
 While desigining the configuration file strucutres, I had the idea in mind that a single `scripts.yaml` file can be used across multiple different machines with different file structures, different program names and even entirely different OS's.
-To be able to do this, each machine needs its own unique identifier - the `name` parameter. For examples of this in action, please refer to the `examples/scripts.yaml` file.
+To be able to do this, each machine needs its own unique identifier - the name parameter. For examples of this in action, please refer to the `examples/scripts.yaml` file.
 
 ## List of things I'm never going to end up doing
 - Use https://github.com/boppreh/keyboard#keyboard.wait so that no external program is needed for hotkeys
