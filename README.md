@@ -13,7 +13,9 @@ Tested on both Windows and Linux. Requires Python 3 and the following libraries:
 - `PyYAML`
 - `TKinter` (Installation varies on OS and Distro)
 
-**NOTE:** The python script does _not_ handle the hotkey triggering natively (yet). So to enable this, I recommend using `AutoHotKey` for Windows or `xbindkeys` for Linux. The `hotkeys` directory includes some example scripts for these programs. **ASSIGN OTHER HOTKEYS AT YOUR OWN RISK**
+The python script does _not_ handle the hotkey triggering natively (yet). So to enable this, I recommend using `AutoHotKey` for Windows or `xbindkeys` for Linux. The `hotkeys` directory includes some example scripts for these programs. **ASSIGN OTHER HOTKEYS AT YOUR OWN RISK**
+
+Sometimes, Python 3 will be installed under the command `python3` rather than `python`. Double check this and keep this in mind when running the commands below.
 
 ## Installation & Setting up
 To install this script, simply clone this repository to anywhere on your local machine:
