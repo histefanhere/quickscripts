@@ -65,4 +65,4 @@ To be able to do this, each machine needs its own unique identifier - the name p
 - [X] Dark mode config, automatic timed selection?
 - [X] Support for "shortcuts"/replacement formatting in scripts.yaml
 - [ ] GUI scripts.yaml editor
-- [ ] Stop user from using multiple keys twice!
+- [X] Stop user from using multiple keys twice!
