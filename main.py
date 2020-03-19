@@ -106,6 +106,10 @@ for title, info in config.scripts.items():
     for repl, repl_string in config.get_config('replace', {}).items():
         cmd = cmd.replace(f"..{repl}..", repl_string)
 
+    if key in [link[1] for link in links]:
+        # Key has already been used
+        raise KeyError(f"Key {key} has been used more than once!")
+
     links.append([
         title,
         key,
