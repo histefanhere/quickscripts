@@ -148,7 +148,7 @@ class Application(tk.Frame):
         self.start_time = time.time()
         # Quit Label and button
         tk.Label(self, text="Q", font=("helvetica", 18), anchor="e", bg=bg, fg="red").grid(row=i, column=0, sticky="E", pady=5)
-        tk.Button(self, textvariable=self.quit, fg="red", font=("helvetica", 12), bg=bg,
+        tk.Button(self, textvariable=self.quit, fg="red", font=("helvetica", 12), bg=bg, highlightthickness=1, highlightcolor="#ffbbbb", highlightbackground="#ffbbbb", borderwidth=0,
                                             command=root.destroy).grid(row=i, column=1, sticky="W", padx=5)
 
         self.quit_timer(root)
