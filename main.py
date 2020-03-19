@@ -91,7 +91,7 @@ name = config.name
 # Handle the parsing of the script file
 links = []
 for title, info in config.scripts.items():
-    key = info['key']
+    str(key) = info['key']
     if key.lower() == "q":
         raise KeyError(f"ERROR: It is forbidden to use the key 'q' for any quickscript!")
         exit()
