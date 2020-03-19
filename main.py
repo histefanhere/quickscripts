@@ -132,36 +132,89 @@ else:
 class Application(tk.Frame):
     def __init__(self, root):
         tk.Frame.__init__(self, root, padx=20, pady=20, bg=bg)
+        self.root = root
+
         self.createWidgets(root)
-        self.pack()
+        self.grid(row=0, column=0)
 
     def createWidgets(self, root):
         i = 0
         n = 5
+        # Here we generate all the link lables. i = the ith link, and n = the number of links per column to show.
         for title, key, command in links:
-            tk.Label(self, text=key.upper(), font=("helvetica", 18), anchor="e", bg=bg, fg=fg).grid(row=(i%n), column=(i//n)*2, sticky="E", pady=5)
-            tk.Label(self, text=title, font=("helvetica", 12), bg=bg, fg=fg).grid(row=(i%n), column=1+(i//n)*2, sticky="W", padx=5)
+            tk.Label(
+                self,
+                text=key.upper(),
+                font=("helvetica", 18),
+                anchor="e",
+                bg=bg, fg=fg
+            ).grid(row=(i%n)+1, column=(i//n)*2, sticky="E", pady=5)
+            tk.Label(
+                self,
+                text=title,
+                font=("helvetica", 12),
+                bg=bg, fg=fg
+            ).grid(row=(i%n)+1, column=1+(i//n)*2, sticky="W", padx=5)
             i += 1
 
+        # This is the variable that stores the quit StringVar
         self.quit = tk.StringVar()
         self.quit.set("QUIT (10)")
         self.start_time = time.time()
         # Quit Label and button
-        tk.Label(self, text="Q", font=("helvetica", 18), anchor="e", bg=bg, fg="red").grid(row=i, column=0, sticky="E", pady=5)
-        tk.Button(self, textvariable=self.quit, fg="red", font=("helvetica", 12), bg=bg, highlightthickness=1, highlightcolor="#ffbbbb", highlightbackground="#ffbbbb", borderwidth=0,
-                                            command=root.destroy).grid(row=i, column=1, sticky="W", padx=5)
+        tk.Label(self,
+            text="Q",
+            font=("helvetica", 18),
+            anchor="e",
+            bg=bg, fg="red"
+        ).grid(row=min(i+1, n+2), column=0, sticky="E", pady=5)
+        tk.Button(self,
+            textvariable=self.quit,
+            fg="red",
+            font=("helvetica", 12),
+            bg=bg,
+            highlightthickness=1,
+            highlightcolor="#ffbbbb",
+            highlightbackground="#ffbbbb",
+            borderwidth=0,
+            command=root.destroy
+        ).grid(row=min(i+1, n+2), column=1, sticky="W", padx=5)
+        # Call the recursive timer method which will count down
+        self.quit_timer()
 
-        self.quit_timer(root)
+        self.cat_row = tk.Frame(self, bg=bg)
+        self.cat_row.grid(row=0, column=0, columnspan=99, sticky="nsew")
 
-    def quit_timer(self, root):
+        groups = [
+            {"key": '1', "name":"first"},
+            {"key": '2', "name":"second"}
+        ]
+
+        j = 0
+        for group in groups:
+            tk.Label(self.cat_row,
+                text=group['key'],
+                font=("helvetica", 18),
+                fg="#909090" if not j else fg,
+                bg=bg
+            ).grid(row=0, column=2*j, sticky="nse")
+            tk.Label(self.cat_row,
+                text=group['name'] + " ",
+                font=("helvetica", 12),
+                fg="#909090" if not j else fg,
+                bg=bg
+            ).grid(row=0, column=2*j+1, sticky="nsw")
+            j += 1
+
+    def quit_timer(self):
         # 20 and division by 2 so that the timer goes twice as slow - actually reduces stress!
         new_time = round((20 - time.time() + self.start_time)/2)
         if new_time == -1:
-            root.destroy()
+            self.root.destroy()
             exit()
         if f"QUIT ({new_time})" != self.quit.get():
             self.quit.set(f"QUIT ({new_time})")
-        root.after(100, lambda: self.quit_timer(root))
+        self.root.after(100, self.quit_timer)
 
 root = tk.Tk()
 root.title("quickscripts")
@@ -186,7 +239,7 @@ borderless = config.get_config('borderless', 0)
 if borderless == 1:
     # LINUX
     root.attributes('-type', 'dock')
-elif borderless == 2: 
+elif borderless == 2:
     # WINDOWS
     root.overrideredirect(True)
 
