@@ -120,6 +120,9 @@ class Config():
                     cmd.split()
                 ])
 
+            if len(grouplinks) == 0:
+                continue
+
             # Now that we have all the links in the group, we need to finalize the group
             self.groups.append({
                 "name": groupname,
