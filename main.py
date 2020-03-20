@@ -14,9 +14,9 @@ class Config():
         if arg != None:
             self.set_config(arg)
 
-        self.read_config()
-
+        self.read_files()
         self.name = self.get_value('name')
+        self.parse_config()
 
     def set_config(self, arg):
         if not os.path.exists('config.yaml'):
@@ -56,18 +56,18 @@ class Config():
         # We don't want to run the code when the user is setting an option
         exit()
 
-    def read_config(self):
+    def read_files(self):
         with open(self.get_file('config.yaml'), 'r') as file:
             data = yaml.safe_load(file.read())
             self.data = data
 
         with open(self.get_file(self.get_value('scripts')), 'r') as file:
-            scripts = yaml.safe_load(file.read())
-            self.scripts = {key: value for key, value in scripts.items() if key != "config"}
+            data = yaml.safe_load(file.read())
+            self.groups_raw = {key: value for key, value in data.items() if key != "config"}
 
             self.data['config'] = {}
-            if 'config' in scripts:
-                self.data['config'] = scripts['config']
+            if 'config' in data:
+                self.data['config'] = data['config']
 
     def get_config(self, value, default):
         if value not in self.data['config']:
@@ -80,41 +80,54 @@ class Config():
 
     def get_value(self, value):
         if value not in self.data:
+# TODO: Raise a different error here
             raise ValueError(f"ERROR: Value '{value}' is not defined in config.yaml!")
             exit()
         else:
             return self.data[value]
 
+    def parse_config(self):
+        """ Read and parse all the user configuration, groups and links from the scripts.yaml file. """
+        self.groups = []
+        for groupname, links in self.groups_raw.items():
+            grouplinks = []
+            for title, info in links.items():
+                key = str(info['key'])
+                if key.lower() == "q":
+                    raise KeyError(f"ERROR: It is forbidden to use the key 'q' for any quickscript!")
+                    exit()
+                if isinstance(info['cmd'], str):
+                    # Same command for all systems
+                    cmd = info['cmd']
+                else:
+                    # See if there's one specific for this machine name
+                    try:
+                        cmd = info['cmd'][self.name]
+                    except KeyError:
+                        # There isn't - that's fine, just continue.
+                        continue
+
+                for repl, repl_string in self.get_config('replace', {}).items():
+                    cmd = cmd.replace(f"${repl}", repl_string)
+
+                if key in [link[1] for link in grouplinks]:
+                    # Key has already been used
+                    raise KeyError(f"Key {key} has been used more than once!")
+
+                grouplinks.append([
+                    title,
+                    key,
+                    cmd.split()
+                ])
+
+            # Now that we have all the links in the group, we need to finalize the group
+            self.groups.append({
+                "name": groupname,
+                "links": grouplinks
+            })
+
 config = Config(args.set)
 name = config.name
-
-# Handle the parsing of the script file
-links = []
-for title, info in config.scripts.items():
-    key = str(info['key'])
-    if key.lower() == "q":
-        raise KeyError(f"ERROR: It is forbidden to use the key 'q' for any quickscript!")
-        exit()
-    if isinstance(info['cmd'], str):
-        cmd = info['cmd']
-    else:
-        try:
-            cmd = info['cmd'][name]
-        except KeyError:
-            continue
-
-    for repl, repl_string in config.get_config('replace', {}).items():
-        cmd = cmd.replace(f"${repl}", repl_string)
-
-    if key in [link[1] for link in links]:
-        # Key has already been used
-        raise KeyError(f"Key {key} has been used more than once!")
-
-    links.append([
-        title,
-        key,
-        cmd.split()
-    ])
 
 if args.check:
     print("Check passed, all config files are okay!")
@@ -124,37 +137,61 @@ if config.get_config("darkmode", 0):
     # Dark mode
     bg = '#282828'
     fg = '#d9d9d9'
+    fg_deselect = "#5f5f5f"
 else:
     # LIGHT MODE
     bg = '#ffffff'
     fg = '#000000'
+    fg_deselect = "#a0a0a0"
 
 class Application(tk.Frame):
     def __init__(self, root):
         tk.Frame.__init__(self, root, padx=20, pady=20, bg=bg)
         self.root = root
 
-        self.createWidgets(root)
+        self.labels = []
+        # This is the link group that is currently active
+        self.active_group = 999
+        self.set_active_group(1)
+
         self.grid(row=0, column=0)
 
-    def createWidgets(self, root):
+
+    def set_active_group(self, n):
+        if n-1 == self.active_group:
+            return
+        if n <= len(config.groups):
+            self.active_group = n-1
+            self.links = config.groups[self.active_group]['links']
+            self.createWidgets()
+
+    def createWidgets(self):
+        for label in self.labels:
+            label.grid_forget()
+        self.labels = []
+        links = self.links
+
         i = 0
         n = 5
         # Here we generate all the link lables. i = the ith link, and n = the number of links per column to show.
         for title, key, command in links:
-            tk.Label(
+            label1 = tk.Label(
                 self,
                 text=key.upper(),
                 font=("helvetica", 18),
                 anchor="e",
                 bg=bg, fg=fg
-            ).grid(row=(i%n)+1, column=(i//n)*2, sticky="E", pady=5)
-            tk.Label(
+            )
+            label1.grid(row=(i%n)+1, column=(i//n)*2, sticky="E", pady=5)
+            self.labels.append(label1)
+            label2 = tk.Label(
                 self,
                 text=title,
                 font=("helvetica", 12),
                 bg=bg, fg=fg
-            ).grid(row=(i%n)+1, column=1+(i//n)*2, sticky="W", padx=5)
+            )
+            label2.grid(row=(i%n)+1, column=1+(i//n)*2, sticky="W", padx=5)
+            self.labels.append(label2)
             i += 1
 
         # This is the variable that stores the quit StringVar
@@ -162,13 +199,15 @@ class Application(tk.Frame):
         self.quit.set("QUIT (10)")
         self.start_time = time.time()
         # Quit Label and button
-        tk.Label(self,
+        quit_label = tk.Label(self,
             text="Q",
             font=("helvetica", 18),
             anchor="e",
             bg=bg, fg="red"
-        ).grid(row=min(i+1, n+2), column=0, sticky="E", pady=5)
-        tk.Button(self,
+        )
+        quit_label.grid(row=min(i+1, n+2), column=0, sticky="E", pady=5)
+        self.labels.append(quit_label)
+        quit_button = tk.Button(self,
             textvariable=self.quit,
             fg="red",
             font=("helvetica", 12),
@@ -178,32 +217,34 @@ class Application(tk.Frame):
             highlightbackground="#ffbbbb",
             borderwidth=0,
             command=root.destroy
-        ).grid(row=min(i+1, n+2), column=1, sticky="W", padx=5)
+        )
+        quit_button.grid(row=min(i+1, n+2), column=1, sticky="W", padx=5)
+        self.labels.append(quit_button)
         # Call the recursive timer method which will count down
         self.quit_timer()
 
         self.cat_row = tk.Frame(self, bg=bg)
         self.cat_row.grid(row=0, column=0, columnspan=99, sticky="nsew")
 
-        groups = [
-            {"key": '1', "name":"first"},
-            {"key": '2', "name":"second"}
-        ]
-
         j = 0
-        for group in groups:
-            tk.Label(self.cat_row,
-                text=group['key'],
+        for group in config.groups:
+            label = tk.Label(self.cat_row,
+                text=str(j+1),
+                padx=5,
                 font=("helvetica", 18),
-                fg="#909090" if not j else fg,
+                fg=fg if j == self.active_group else fg_deselect,
                 bg=bg
-            ).grid(row=0, column=2*j, sticky="nse")
-            tk.Label(self.cat_row,
-                text=group['name'] + " ",
+            )
+            label.grid(row=0, column=2*j, sticky="nse")
+            self.labels.append(label)
+            label = tk.Label(self.cat_row,
+                text=group['name'],
                 font=("helvetica", 12),
-                fg="#909090" if not j else fg,
+                fg=fg if j == self.active_group else fg_deselect,
                 bg=bg
-            ).grid(row=0, column=2*j+1, sticky="nsw")
+            )
+            label.grid(row=0, column=2*j+1, sticky="nsw")
+            self.labels.append(label)
             j += 1
 
     def quit_timer(self):
@@ -221,11 +262,17 @@ root.title("quickscripts")
 app = Application(root)
 
 def parse_key(event):
-    if event.char == "q":
+    char = event.char
+
+    if char == "q":
         root.destroy()
 
-    for name, key, command in links:
-        if event.char == key:
+    if char in "123456789":
+        app.set_active_group(int(char))
+        return
+
+    for name, key, command in app.links:
+        if char == key:
             subprocess.Popen(command)
             root.destroy()
 
