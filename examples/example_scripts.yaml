@@ -30,44 +30,61 @@ config:
     # 2 - No border. WINDOWS ONLY
     borderless: 0
 
-###########
-# EXAMPLE 1
-###########
-
 # ALLOWED KEYS: Only the a-z keys have been tested, however more may work.
 # BE CAREFUL WHEN PLAYING WITH THIS, ONLY USE KEYS WHICH HAVE BEEN TESTED.
 
-# This is the most basic kind of use, where a key will always trigger the same command.
-# You specify the `key` which will trigger the command, and the `cmd` itself.
-# The same command will be executed across all machines this is configured in.
-# (Most useful if you only have one machine, or a command is identical across mutliple)
-Browser:
-  key: b
-  cmd: /your/path/to/anything/if/required/firefox.exe
 
-###########
-# EXAMPLE 2
-###########
+# "Webpages" here is called a group. Groups, well, group scripts togeather
+# Use them to better organize all your different scripts.
+Webpages:
 
-# If however you have multiple machines with different OS's on them which run commands differently...
-# ...you can specify the machines names as sub categories to the `cmd`, and each machine will run their...
-# ...coresponding commands.
-Facebook:
-  key: f
-  cmd:
-    my_windows_computer: C:\Program Files\facebook.exe
-    my_linux_machine: sh /home/user/games/facebook.sh
+  ###########
+  # EXAMPLE 1
+  ###########
 
-###########
-# EXAMPLE 3
-###########
+  # This is the most basic kind of use, where a key will always trigger the same command.
+  # You specify the `key` which will trigger the command, and the `cmd` itself.
+  # The same command will be executed across all machines this is configured in.
+  # (Most useful if you only have one machine, or a command is identical across mutliple)
+  Browser:
+    key: b
+    cmd: /your/path/to/anything/if/required/firefox.exe
 
-# You may also have some scripts which you only have on one machine. In that case, you can _only_ specify...
-# ...that machine and the quickscript will not be visible on all other machines.
-The Best Video Game:
-  key: v
-  cmd:
-    my_windows_computer: C:\Program Files\TheBestVideoGame.exe
+  ###########
+  # EXAMPLE 2
+  ###########
+
+  # If however you have multiple machines with different OS's on them which run commands differently...
+  # ...you can specify the machines names as sub categories to the `cmd`, and each machine will run their...
+  # ...coresponding commands.
+  Facebook:
+    key: f
+    cmd:
+      my_windows_computer: C:\Program Files\facebook.exe
+      my_linux_machine: sh /home/user/games/facebook.sh
+
+
+# Here's another group that I've called "games" to group all my games togeather.
+Games:
+
+  ###########
+  # EXAMPLE 3
+  ###########
+
+  # You may also have some scripts which you only have on one machine. In that case, you can _only_ specify...
+  # ...that machine and the quickscript will not be visible on all other machines.
+  The Best Video Game:
+    key: v
+    cmd:
+      my_windows_computer: C:\Program Files\TheBestVideoGame.exe
+
+
+  # Notice here how we're able to use the key "f" despite using the f key previously for the Facebook script.
+  # That's because it's in a different group!
+  Fire Boy % Water Girl:
+    key: f
+    cmd:
+      my_windows_computer: $firefox_path www.miniclip.com
 
 ###########
 # EXAMPLE 4
