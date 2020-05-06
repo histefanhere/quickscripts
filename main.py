@@ -282,8 +282,8 @@ def parse_key(event):
 root.bind("<Key>", parse_key)
 
 # WINDOWS & LINUX - forcing focus
-root.wm_attributes("-topmost", 1)
-root.focus_force()
+# root.wm_attributes("-topmost", 1)
+# root.focus_force()
 
 borderless = config.get_config('borderless', 0)
 if borderless == 1:
