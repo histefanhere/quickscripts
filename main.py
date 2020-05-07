@@ -19,7 +19,6 @@ class Config():
             self.configuration_wizard()
 
         self.read_files()
-        self.name = self.get_value('name')
         self.parse_config()
 
     def configuration_wizard(self):
@@ -71,30 +70,25 @@ class Config():
             data = yaml.safe_load(file.read())
             self.data = data
 
-        with open(self.get_file(self.get_value('scripts')), 'r') as file:
+            self.name, self.scripts_filename = data['name'], data['scripts']
+
+        with open(self.get_file(self.scripts_filename), 'r') as file:
             data = yaml.safe_load(file.read())
             self.groups_raw = {key: value for key, value in data.items() if key != "config"}
 
-            self.data['config'] = {}
+            self.options = {}
             if 'config' in data:
-                self.data['config'] = data['config']
+                self.options = data['config']
 
-    def get_config(self, value, default):
-        if value not in self.data['config']:
-            if self.name in self.data['config']:
-                if value in self.data['config'][self.name]:
-                    return self.data['config'][self.name][value]
+    def get_option(self, value, default):
+        """Get an option value, if it's available, from the user-defined `config` field in scripts.yaml"""
+        if value in self.options:
+            return self.options[value]
         else:
-            return self.data['config'][value]
+            if self.name in self.options:
+                if value in self.options[self.name]:
+                    return self.options[self.name][value]
         return default
-
-    def get_value(self, value):
-        if value not in self.data:
-# TODO: Raise a different error here
-            raise ValueError(f"ERROR: Value '{value}' is not defined in config.yaml!")
-            exit()
-        else:
-            return self.data[value]
 
     def parse_config(self):
         """ Read and parse all the user configuration, groups and links from the scripts.yaml file. """
@@ -117,7 +111,7 @@ class Config():
                         # There isn't - that's fine, just continue.
                         continue
 
-                for repl, repl_string in self.get_config('replace', {}).items():
+                for repl, repl_string in self.get_option('replace', {}).items():
                     cmd = cmd.replace(f"${repl}", repl_string)
 
                 if key in [link[1] for link in grouplinks]:
@@ -139,14 +133,11 @@ class Config():
                 "links": grouplinks
             })
 
-config = Config(args.set)
+config = Config()
+# TODO: Why is this here?
 name = config.name
 
-if args.check:
-    print("Check passed, all config files are okay!")
-    exit()
-
-if config.get_config("darkmode", 0):
+if config.get_option("darkmode", 0):
     # Dark mode
     bg = '#282828'
     fg = '#d9d9d9'
@@ -295,7 +286,7 @@ root.bind("<Key>", parse_key)
 # root.wm_attributes("-topmost", 1)
 # root.focus_force()
 
-borderless = config.get_config('borderless', 0)
+borderless = config.get_option('borderless', 0)
 if borderless == 1:
     # LINUX
     root.attributes('-type', 'dock')
