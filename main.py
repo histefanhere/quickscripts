@@ -15,6 +15,9 @@ class Config():
         if args.configure:
             self.configuration_wizard()
 
+        if not os.path.exists('config.yaml'):
+            self.configuration_wizard()
+
         self.read_files()
         self.name = self.get_value('name')
         self.parse_config()
@@ -59,7 +62,7 @@ class Config():
 
                 with open(self.get_file('config.yaml'), 'w+') as file:
                     file.write(yaml.dump(data))
-                print("Value `{}` was successfully set to `{}`!".format(arg[0], " ".join(arg[1:])))
+
         # We don't want to run the code when the user is setting an option
         exit()
 
