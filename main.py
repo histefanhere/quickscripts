@@ -2,53 +2,60 @@ import tkinter as tk
 import subprocess, argparse, os, yaml, time
 
 parser = argparse.ArgumentParser(description="Quickly Run your favourite scripts and applications.\nFor aditional help, check the README.")
-parser.add_argument("--check", action="store_true", help="Check if the config files are valid")
-parser.add_argument("--set", nargs="*", metavar=('option', 'value'), help="Set some options of the script")
+# parser.add_argument("--check", action="store_true", help="Check if the config files are valid")
+# parser.add_argument("--set", nargs="*", metavar=('option', 'value'), help="Set some options of the script")
+parser.add_argument("--configure", action="store_true", help="Set some options of the script")
 args = parser.parse_args()
 
 class Config():
     def get_file(self, filename):
         return os.path.join(os.path.dirname(__file__), filename)
 
-    def __init__(self, arg):
-        if arg != None:
-            self.set_config(arg)
+    def __init__(self):
+        if args.configure:
+            self.configuration_wizard()
 
         self.read_files()
         self.name = self.get_value('name')
         self.parse_config()
 
-    def set_config(self, arg):
+    def configuration_wizard(self):
         if not os.path.exists('config.yaml'):
             with open(self.get_file('config.yaml'), 'w+') as file:
-                file.write('')
+                file.write('scripts: .\scripts.yaml')
 
         with open(self.get_file('config.yaml'), 'r+') as file:
             data = yaml.safe_load(file.read())
             if data == None:
                 data = {}
 
-        values = ["name", "scripts"]
+        print("Welcome to the quickscripts configuration wizard!")
+        time.sleep(2)
+        print("Here you'll be able to set some key values that the script needs to opearte.")
+        time.sleep(3)
 
-        if len(arg) == 0:
-            # User wants to check all values set
-            for val in values:
-                if val not in data:
-                    print(f"{val}: Not set!")
-                else:
-                    print(f"{val} = {data[val]}")
-        elif len(arg) == 1:
-            # Wants to check the value of a specific setting
-            if arg[0] not in values:
-                print(f"{arg[0]} is not a valid value!")
-            else:
-                print("Please specify the value to be set")
-        elif len(arg) >= 2:
-            # Wants to set a setting to a value
-            if arg[0] not in values:
-                print(f"{arg[0]} is not a valid value!")
-            else:
-                data[arg[0]] = " ".join(arg[1:])
+        print("\nLet's start with an easy one: What's the name of this machine?")
+
+        prompt = "(leave blank for no name): "
+        if 'name' in data:
+            prompt = f"(leave blank for current value, '{data['name']}'): "
+        name = input(prompt)
+        if not name == "":
+            data['name'] = name
+
+        print(f"Awesome, the name of this machine is now {data['name']}!")
+        time.sleep(3)
+
+        print("\nNow you'll need to tell me where I can find the scripts file")
+        time.sleep(2)
+        scripts = input(f"(leave blank for current value, '{data['scripts']}'): ")
+        if not scripts == "":
+            data['scripts'] = scripts
+
+        print(f"Thanks, now I know that the scripts file is located at {data['scripts']}!")
+        time.sleep(3)
+
+        print("And that's it! Try to run this script without any arguments now, and thank you for using quickscripts! :)")
 
                 with open(self.get_file('config.yaml'), 'w+') as file:
                     file.write(yaml.dump(data))
