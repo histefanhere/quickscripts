@@ -30,7 +30,7 @@ python main.py --configure
 
 Now you must create a `scripts.yaml` file, which is your configuration file where all your scripts will be stored. It is recommended to be located in the same path as the script, however this is totally configurable if you wish for it to be located elsewhere via the command above (even the name of the file is changeable if you'd prefer a `.scripts.yaml`, for example). An example of this file can be found in the `examples` folder, so check this before creating your own. In the examples is also explained all the different usecases of the program, so it is highly recommended to read through them.
 
-## Why do I need to provide a `name`?
+### Why do I need to provide a `name`?
 While desigining the configuration file strucutres, I had the idea in mind that a single `scripts.yaml` file can be used across multiple different machines with different file structures, different program names and even entirely different OS's.
 To be able to do this, each machine needs its own unique identifier - the name parameter. For examples of this in action, please refer to the `examples/scripts.yaml` file.
 
