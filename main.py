@@ -1,9 +1,17 @@
 import tkinter as tk
+from tkinter import messagebox
 import subprocess, argparse, os, yaml, time
 
 parser = argparse.ArgumentParser(description="Quickly Run your favourite scripts and applications.\nFor aditional help, check the README.")
 parser.add_argument("--configure", action="store_true", help="Set some options of the script")
 args = parser.parse_args()
+
+valid_keys = "abcdefghijklmnoprstuvwxyz,.<>/?;:'\"[]{}-_=+!@#$%^&*()`~"
+invalid_keys = "q"
+
+def error(message, title="Error!"):
+    messagebox.showerror(title, message)
+    raise Exception(message)
 
 class Group:
     def __init__(self, name, key, scripts):
@@ -16,10 +24,23 @@ class Script:
         self.name = name
         self.key = key
         self.command = command
+    
+    def execute(self):
+        subprocess.Popen(self.command.split())
 
 class Config():
     def get_file(self, filename):
         return os.path.join(os.path.dirname(__file__), filename)
+    
+    def load_yaml(self, file):
+        try:
+            data = yaml.safe_load(file.read())
+        except Exception as e:
+            file.close()
+            error(f"Error in parsing YAML file {file.name}:\n\n" + str(e))
+        else:
+            return data
+
 
     def __init__(self):
         if args.configure:
@@ -29,13 +50,13 @@ class Config():
             self.configuration_wizard()
 
         with open(self.get_file('config.yaml'), 'r') as file:
-            data = yaml.safe_load(file.read())
+            data = self.load_yaml(file)
             self.data = data
 
             self.name, self.scripts_filename = data['name'], data['scripts']
         
         with open(self.get_file(self.scripts_filename), 'r') as file:
-            data = yaml.safe_load(file.read())
+            data = self.load_yaml(file)
             groups_raw = {key: value for key, value in data.items() if key != "config"}
 
             self.options = {}
@@ -51,7 +72,7 @@ class Config():
 
         with open(self.get_file('config.yaml'), 'r+') as file:
             # TODO: Slap a try around this
-            data = yaml.safe_load(file.read())
+            data = self.load_yaml(file)
             if data == None:
                 data = {}
 
@@ -106,9 +127,14 @@ class Config():
             for script_name, script in scripts.items():
                 key = str(script['key'])
 
-                if key.lower() == "q":
-                    raise KeyError(f"ERROR: It is forbidden to use the key 'q' for any quickscript!")
-                    exit()
+                if key.lower() in invalid_keys:
+                    error(f"It is forbidden to use the key '{key}' for any quickscript!")
+
+                if key.lower() not in valid_keys:
+                    error(f"ERROR: key '{key}' is an invalid quickscript key!")
+
+                if key in [script.key for script in group.scripts]:
+                    error(f"Key {key} has been used more than once in the same script group!")
 
                 if isinstance(script['cmd'], str):
                     # Same command for all systems
@@ -124,10 +150,6 @@ class Config():
                 for replace_keyword, replace_string in self.get_option('replace', {}).items():
                     cmd = cmd.replace(f"${replace_keyword}", replace_string)
 
-                if key in [script.key for script in group.scripts]:
-                    # Key has already been used
-                    raise KeyError(f"Key {key} has been used more than once in the same script group!")
-
                 group.scripts.append(Script(
                     script_name,
                     key,
@@ -140,6 +162,9 @@ class Config():
                 continue
 
             groups.append(group)
+        
+        if len(groups) > 9:
+            error("You cannot have more than 9 Script Groups!")
 
         return groups
 
@@ -308,7 +333,7 @@ def parse_key(event=None, key=None):
     else:
         for script in app.scripts:
             if char == script.key:
-                subprocess.Popen(script.command.split())
+                script.execute()
                 root.destroy()
 
 root.bind("<Key>", parse_key)
