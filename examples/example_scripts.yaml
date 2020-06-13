@@ -17,6 +17,9 @@ config:
   # 1 - Dark mode
   darkmode: 0
 
+  # Any positive integer, represents the number of rows of scripts (Defaults to 5 rows)
+  rows: 5
+
   # Use this to replace any occurance of a string with another - look at Example 4 to see this in action
   replace:
     firefox_path: C:\Program Files\Mozilla Firefox\firefox.exe

@@ -212,7 +212,7 @@ class MainMenu(tk.Frame):
         self.labels = []
 
         i = 0
-        n = 5
+        n = config.get_option("rows", 5)
         # Here we generate all the link lables. i = the ith link, and n = the number of links per column to show.
         for script in self.scripts:
             script_letter_label = tk.Label(
