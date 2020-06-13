@@ -2,10 +2,20 @@ import tkinter as tk
 import subprocess, argparse, os, yaml, time
 
 parser = argparse.ArgumentParser(description="Quickly Run your favourite scripts and applications.\nFor aditional help, check the README.")
-# parser.add_argument("--check", action="store_true", help="Check if the config files are valid")
-# parser.add_argument("--set", nargs="*", metavar=('option', 'value'), help="Set some options of the script")
 parser.add_argument("--configure", action="store_true", help="Set some options of the script")
 args = parser.parse_args()
+
+class Group:
+    def __init__(self, name, key, scripts):
+        self.name = name
+        self.key = key
+        self.scripts = scripts
+
+class Script:
+    def __init__(self, name, key, command):
+        self.name = name
+        self.key = key
+        self.command = command
 
 class Config():
     def get_file(self, filename):
@@ -75,7 +85,6 @@ class Config():
         with open(self.get_file('config.yaml'), 'w+') as file:
             file.write(yaml.dump(data))
 
-        # We don't want to run the code when the user is setting an option
         exit()
 
     def get_option(self, value, default):
@@ -91,54 +100,52 @@ class Config():
     def parse_groups(self, groups_raw):
         """Parse the groups from the yaml configuration"""
         groups = []
-        for groupname, links in groups_raw.items():
-            grouplinks = []
-            for title, info in links.items():
-                key = str(info['key'])
+        group_key = 1
+        for group_name, scripts in groups_raw.items():
+            group = Group(group_name, group_key, [])
+            for script_name, script in scripts.items():
+                key = str(script['key'])
+
                 if key.lower() == "q":
                     raise KeyError(f"ERROR: It is forbidden to use the key 'q' for any quickscript!")
                     exit()
-                if isinstance(info['cmd'], str):
+
+                if isinstance(script['cmd'], str):
                     # Same command for all systems
-                    cmd = info['cmd']
+                    cmd = script['cmd']
                 else:
                     # See if there's one specific for this machine name
                     try:
-                        cmd = info['cmd'][self.name]
+                        cmd = script['cmd'][self.name]
                     except KeyError:
                         # There isn't - that's fine, just continue.
                         continue
 
-                for repl, repl_string in self.get_option('replace', {}).items():
-                    cmd = cmd.replace(f"${repl}", repl_string)
+                for replace_keyword, replace_string in self.get_option('replace', {}).items():
+                    cmd = cmd.replace(f"${replace_keyword}", replace_string)
 
-                if key in [link[1] for link in grouplinks]:
+                if key in [script.key for script in group.scripts]:
                     # Key has already been used
-                    raise KeyError(f"Key {key} has been used more than once!")
+                    raise KeyError(f"Key {key} has been used more than once in the same script group!")
 
-                grouplinks.append([
-                    title,
+                group.scripts.append(Script(
+                    script_name,
                     key,
-                    cmd.split()
-                ])
+                    cmd
+                ))
 
-            if len(grouplinks) == 0:
+            group_key += 1
+
+            if len(group.scripts) == 0:
                 continue
 
-            # Now that we have all the links in the group, we need to finalize the group
-            groups.append({
-                "name": groupname,
-                "links": grouplinks
-            })
+            groups.append(group)
 
         return groups
 
 class customButton(tk.Button):
-    def __init__(self, master, title, key, **kwargs):
+    def __init__(self, master, **kwargs):
         tk.Button.__init__(self, master, **kwargs)
-
-        self.title = title
-        self.key = key
 
         self.bind("<Enter>", self.on_enter)
         self.bind("<Leave>", self.on_leave)
@@ -159,53 +166,50 @@ class MainMenu(tk.Frame):
         self.root = root
 
         self.labels = []
-        # This is the link group that is currently active
-        self.active_group = 999
+
+        self.active_group = None
         self.set_active_group(1)
 
         self.grid(row=0, column=0)
 
-
     def set_active_group(self, n):
-        if n-1 == self.active_group:
+        if n == self.active_group:
             return
-        if n <= len(config.groups):
-            self.active_group = n-1
-            self.links = config.groups[self.active_group]['links']
-            self.createWidgets()
+        for group in config.groups:
+            if group.key == n:
+                self.active_group = n
+                self.scripts = group.scripts
+                self.create_widgets()
 
-    def createWidgets(self):
+    def create_widgets(self):
         for label in self.labels:
             label.grid_forget()
         self.labels = []
-        links = self.links
 
         i = 0
         n = 5
         # Here we generate all the link lables. i = the ith link, and n = the number of links per column to show.
-        for title, key, command in links:
-            label1 = tk.Label(
+        for script in self.scripts:
+            script_letter_label = tk.Label(
                 self,
-                text=key.upper(),
+                text=script.key.upper(),
                 font=("helvetica", 18),
                 anchor="e",
                 bg=bg, fg=fg
             )
-            label1.grid(row=(i%n)+1, column=(i//n)*2, sticky="E", pady=5)
-            self.labels.append(label1)
-            label2 = customButton(
+            script_letter_label.grid(row=(i%n)+1, column=(i//n)*2, sticky="E", pady=5)
+            self.labels.append(script_letter_label)
+            script_name_label = customButton(
                 self,
-                title,
-                key,
-                text=title,
+                text=script.name,
                 font=("helvetica", 12),
                 bg=bg, fg=fg,
                 borderwidth=0,
                 padx=1,
-                command=lambda key_=key: parse_key(key=key_)
+                command=lambda key_=script.key: parse_key(key=key_)
             )
-            label2.grid(row=(i%n)+1, column=1+(i//n)*2, sticky="W", padx=5)
-            self.labels.append(label2)
+            script_name_label.grid(row=(i%n)+1, column=1+(i//n)*2, sticky="W", padx=5)
+            self.labels.append(script_name_label)
             i += 1
 
         ### QUIT BUTTON
@@ -233,29 +237,33 @@ class MainMenu(tk.Frame):
         # Call the recursive timer method which will count down
         self.quit_timer()
 
-        self.cat_row = tk.Frame(self, bg=bg)
-        self.cat_row.grid(row=0, column=0, columnspan=99, sticky="nsew")
+        ### GROUPS
+        self.group_row = tk.Frame(self, bg=bg)
+        self.group_row.grid(row=0, column=0, columnspan=99, sticky="nsew")
 
-        j = 0
+        i = 0
         for group in config.groups:
-            label = tk.Label(self.cat_row,
-                text=str(j+1),
+            label = tk.Label(self.group_row,
+                text=str(group.key),
                 padx=5,
                 font=("helvetica", 18),
-                fg=fg if j == self.active_group else fg_deselect,
+                fg=fg if group.key == self.active_group else fg_deselect,
                 bg=bg
             )
-            label.grid(row=0, column=2*j, sticky="nse")
+            label.grid(row=0, column=2*i, sticky="nse")
             self.labels.append(label)
-            label = tk.Label(self.cat_row,
-                text=group['name'],
+            label = customButton(self.group_row,
+                text=group.name,
                 font=("helvetica", 12),
-                fg=fg if j == self.active_group else fg_deselect,
-                bg=bg
+                fg=fg if group.key == self.active_group else fg_deselect,
+                bg=bg,
+                borderwidth=0,
+                padx=1,
+                command=lambda key_=group.key: parse_key(key=str(key_))
             )
-            label.grid(row=0, column=2*j+1, sticky="nsw")
+            label.grid(row=0, column=2*i+1, sticky="nsw")
             self.labels.append(label)
-            j += 1
+            i += 1
 
     def quit_timer(self):
         # 20 and division by 2 so that the timer goes twice as slow - actually reduces stress!
@@ -294,14 +302,14 @@ def parse_key(event=None, key=None):
     if char == "q":
         root.destroy()
 
-    if char in "123456789":
+    elif char in "123456789":
         app.set_active_group(int(char))
-        return
 
-    for name, key, command in app.links:
-        if char == key:
-            subprocess.Popen(command)
-            root.destroy()
+    else:
+        for script in app.scripts:
+            if char == script.key:
+                subprocess.Popen(script.command.split())
+                root.destroy()
 
 root.bind("<Key>", parse_key)
 
