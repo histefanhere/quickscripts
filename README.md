@@ -52,3 +52,7 @@ To be able to do this, each machine needs its own unique identifier - the name p
 - [X] Support for "shortcuts"/replacement formatting in scripts.yaml
 - [ ] GUI scripts.yaml editor
 - [X] Stop user from using multiple keys twice!
+- [X] Put name and scripts options into one command which prompts user for inputs via input()
+- [ ] Warn user graphically if there's an error in their scripts.yaml
+- [ ] Fix example_scripts.yaml
+- [ ] Custom keys for groups?
