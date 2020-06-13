@@ -149,7 +149,27 @@ else:
     fg = '#000000'
     fg_deselect = "#a0a0a0"
 
-class Application(tk.Frame):
+class customButton(tk.Button):
+    def __init__(self, master, title, key, **kwargs):
+        tk.Button.__init__(self, master, **kwargs)
+
+        self.title = title
+        self.key = key
+
+        self.bind("<Enter>", self.on_enter)
+        self.bind("<Leave>", self.on_leave)
+
+    def on_enter(self, event):
+        self['borderwidth'] = 1
+        self['padx'] = 0
+        # self['background'] = fg_deselect
+    
+    def on_leave(self, event):
+        self['borderwidth'] = 0
+        self['padx'] = 1
+        # self['background'] = bg
+
+class MainMenu(tk.Frame):
     def __init__(self, root):
         tk.Frame.__init__(self, root, padx=20, pady=20, bg=bg)
         self.root = root
@@ -189,21 +209,25 @@ class Application(tk.Frame):
             )
             label1.grid(row=(i%n)+1, column=(i//n)*2, sticky="E", pady=5)
             self.labels.append(label1)
-            label2 = tk.Label(
+            label2 = customButton(
                 self,
+                title,
+                key,
                 text=title,
                 font=("helvetica", 12),
-                bg=bg, fg=fg
+                bg=bg, fg=fg,
+                borderwidth=0,
+                padx=1,
+                command=lambda key_=key: parse_key(key=key_)
             )
             label2.grid(row=(i%n)+1, column=1+(i//n)*2, sticky="W", padx=5)
             self.labels.append(label2)
             i += 1
 
-        # This is the variable that stores the quit StringVar
+        ### QUIT BUTTON
         self.quit = tk.StringVar()
         self.quit.set("QUIT (10)")
         self.start_time = time.time()
-        # Quit Label and button
         quit_label = tk.Label(self,
             text="Q",
             font=("helvetica", 18),
@@ -217,9 +241,6 @@ class Application(tk.Frame):
             fg="red",
             font=("helvetica", 12),
             bg=bg,
-            highlightthickness=1,
-            highlightcolor="#ffbbbb",
-            highlightbackground="#ffbbbb",
             borderwidth=0,
             command=root.destroy
         )
@@ -264,9 +285,13 @@ class Application(tk.Frame):
 
 root = tk.Tk()
 root.title("quickscripts")
-app = Application(root)
+app = MainMenu(root)
 
-def parse_key(event):
+def parse_key(event=None, key=None):
+    if event is None:
+        print(key)
+        char = key
+    else:
     char = event.char
 
     if char == "q":
