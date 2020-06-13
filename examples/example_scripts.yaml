@@ -33,9 +33,6 @@ config:
     # 2 - No border. WINDOWS ONLY
     borderless: 0
 
-# ALLOWED KEYS: Only the a-z keys have been tested, however more may work.
-# BE CAREFUL WHEN PLAYING WITH THIS, ONLY USE KEYS WHICH HAVE BEEN TESTED.
-
 
 # "Webpages" here is called a group. Groups, well, group scripts togeather
 # Use them to better organize all your different scripts.
@@ -74,7 +71,7 @@ Games:
   # EXAMPLE 3
   ###########
 
-  # You may also have some scripts which you only have on one machine. In that case, you can _only_ specify...
+  # You may also have some scripts which you only have on one machine. In that case, you can also _only_ specify...
   # ...that machine and the quickscript will not be visible on all other machines.
   The Best Video Game:
     key: v

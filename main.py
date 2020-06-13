@@ -41,7 +41,6 @@ class Config():
         else:
             return data
 
-
     def __init__(self):
         if args.configure:
             self.configuration_wizard()
