@@ -18,8 +18,21 @@ class Config():
         if not os.path.exists('config.yaml'):
             self.configuration_wizard()
 
-        self.read_files()
-        self.parse_config()
+        with open(self.get_file('config.yaml'), 'r') as file:
+            data = yaml.safe_load(file.read())
+            self.data = data
+
+            self.name, self.scripts_filename = data['name'], data['scripts']
+        
+        with open(self.get_file(self.scripts_filename), 'r') as file:
+            data = yaml.safe_load(file.read())
+            groups_raw = {key: value for key, value in data.items() if key != "config"}
+
+            self.options = {}
+            if 'config' in data:
+                self.options = data['config']
+
+        self.groups = self.parse_groups(groups_raw)
 
     def configuration_wizard(self):
         if not os.path.exists('config.yaml'):
@@ -27,6 +40,7 @@ class Config():
                 file.write('scripts: .\scripts.yaml')
 
         with open(self.get_file('config.yaml'), 'r+') as file:
+            # TODO: Slap a try around this
             data = yaml.safe_load(file.read())
             if data == None:
                 data = {}
@@ -65,21 +79,6 @@ class Config():
         # We don't want to run the code when the user is setting an option
         exit()
 
-    def read_files(self):
-        with open(self.get_file('config.yaml'), 'r') as file:
-            data = yaml.safe_load(file.read())
-            self.data = data
-
-            self.name, self.scripts_filename = data['name'], data['scripts']
-
-        with open(self.get_file(self.scripts_filename), 'r') as file:
-            data = yaml.safe_load(file.read())
-            self.groups_raw = {key: value for key, value in data.items() if key != "config"}
-
-            self.options = {}
-            if 'config' in data:
-                self.options = data['config']
-
     def get_option(self, value, default):
         """Get an option value, if it's available, from the user-defined `config` field in scripts.yaml"""
         if value in self.options:
@@ -90,10 +89,10 @@ class Config():
                     return self.options[self.name][value]
         return default
 
-    def parse_config(self):
-        """ Read and parse all the user configuration, groups and links from the scripts.yaml file. """
-        self.groups = []
-        for groupname, links in self.groups_raw.items():
+    def parse_groups(self, groups_raw):
+        """Parse the groups from the yaml configuration"""
+        groups = []
+        for groupname, links in groups_raw.items():
             grouplinks = []
             for title, info in links.items():
                 key = str(info['key'])
@@ -128,10 +127,12 @@ class Config():
                 continue
 
             # Now that we have all the links in the group, we need to finalize the group
-            self.groups.append({
+            groups.append({
                 "name": groupname,
                 "links": grouplinks
             })
+
+        return groups
 
 config = Config()
 # TODO: Why is this here?
