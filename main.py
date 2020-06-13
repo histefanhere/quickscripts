@@ -72,9 +72,8 @@ class Config():
         time.sleep(3)
 
         print("And that's it! Try to run this script without any arguments now, and thank you for using quickscripts! :)")
-
-                with open(self.get_file('config.yaml'), 'w+') as file:
-                    file.write(yaml.dump(data))
+        with open(self.get_file('config.yaml'), 'w+') as file:
+            file.write(yaml.dump(data))
 
         # We don't want to run the code when the user is setting an option
         exit()
@@ -133,21 +132,6 @@ class Config():
             })
 
         return groups
-
-config = Config()
-# TODO: Why is this here?
-name = config.name
-
-if config.get_option("darkmode", 0):
-    # Dark mode
-    bg = '#282828'
-    fg = '#d9d9d9'
-    fg_deselect = "#5f5f5f"
-else:
-    # LIGHT MODE
-    bg = '#ffffff'
-    fg = '#000000'
-    fg_deselect = "#a0a0a0"
 
 class customButton(tk.Button):
     def __init__(self, master, title, key, **kwargs):
@@ -283,6 +267,19 @@ class MainMenu(tk.Frame):
             self.quit.set(f"QUIT ({new_time})")
         self.root.after(100, self.quit_timer)
 
+config = Config()
+
+if config.get_option("darkmode", 0):
+    # Dark mode
+    bg = '#282828'
+    fg = '#d9d9d9'
+    fg_deselect = "#5f5f5f"
+else:
+    # LIGHT MODE
+    bg = '#ffffff'
+    fg = '#000000'
+    fg_deselect = "#a0a0a0"
+
 root = tk.Tk()
 root.title("quickscripts")
 app = MainMenu(root)
@@ -292,7 +289,7 @@ def parse_key(event=None, key=None):
         print(key)
         char = key
     else:
-    char = event.char
+        char = event.char
 
     if char == "q":
         root.destroy()
