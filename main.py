@@ -28,7 +28,7 @@ class Script:
     command: str
     
     def execute(self):
-        subprocess.Popen(self.command.splitq())
+        subprocess.Popen(self.command.split())
 
 class Config():
     def get_file(self, filename):
