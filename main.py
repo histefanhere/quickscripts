@@ -2,6 +2,8 @@ import tkinter as tk
 from tkinter import messagebox
 import subprocess, argparse, os, yaml, time
 
+from dataclasses import dataclass
+
 parser = argparse.ArgumentParser(description="Quickly Run your favourite scripts and applications.\nFor aditional help, check the README.")
 parser.add_argument("--configure", action="store_true", help="Set some options of the script")
 args = parser.parse_args()
@@ -13,20 +15,20 @@ def error(message, title="Error!"):
     messagebox.showerror(title, message)
     raise Exception(message)
 
+@dataclass
 class Group:
-    def __init__(self, name, key, scripts):
-        self.name = name
-        self.key = key
-        self.scripts = scripts
+    name: str
+    key: int
+    scripts: list
 
+@dataclass
 class Script:
-    def __init__(self, name, key, command):
-        self.name = name
-        self.key = key
-        self.command = command
+    name: str
+    key: str
+    command: str
     
     def execute(self):
-        subprocess.Popen(self.command.split())
+        subprocess.Popen(self.command.splitq())
 
 class Config():
     def get_file(self, filename):
