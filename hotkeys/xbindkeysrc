@@ -1,0 +1,16 @@
+# xbindkeysrc - a valid configuration file for xbindkeys,
+# an awesome linux program for binding commands to certain hotkeys.
+# AUTHOR: Stefan Zdravkovic
+
+# To use this script, copy this file to your home directory and rename it to ".xbindkeysrc" (with a dot).
+# An example command is shown below:
+# cp xbindkeysrc ~/.xbindkeysrc
+
+# Now change the path below to point to the `run.sh` script in the `hotkeys` folder.
+
+# Once you've done all this you should be able to trigger quickscripts via a hotkey, setup below is Alt + Q.
+
+"/PUT/FULL/PATH/TO/QUICKSCRIPTS/FOLDER/HERE/quickscripts/hotkeys/run.sh"
+    m:0x8 + c:24
+    Alt + q 
+
