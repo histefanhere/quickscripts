@@ -38,7 +38,6 @@ function setActiveGroup(group) {
                 let row = `<tr>`;
                 for (let ci = 0; ci < Math.floor( (scripts.length - ri - 1) / maxRows) + 1; ci++) {
                     let script = scripts[ri + maxRows * ci];
-                    console.log(ri, ci, script);
                     row += `<td><span class="fs-1 me-2">${script.key.toUpperCase()}</span></td><td><span class="fs-3 me-5">${script.name}</span></td>`;
                 }
                 row += `</tr>`;
@@ -51,7 +50,7 @@ function setActiveGroup(group) {
             </tr>`;
             document.getElementById('table-scripts').innerHTML = html;
 
-            setTimeout(() => { pywebview.api.fit_window(document.body.scrollWidth, document.body.scrollHeight); }, 50);
+            pywebview.api.fit_window(document.body.scrollWidth, document.body.scrollHeight);
             return;
         }
     }

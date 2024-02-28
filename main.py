@@ -1,4 +1,5 @@
 from dataclasses import dataclass, asdict
+import math
 import subprocess, argparse, os, yaml, time
 import webview
 
@@ -192,11 +193,12 @@ if __name__ == '__main__':
         'Quickscripts',
         'assets/index.html',
         js_api=api,
-        min_size=(100, 100),
         frameless=True,
         on_top=True,
         x=0,
         y=0,
+        width=1000,
+        height=1000,
         transparent=True
     )
     webview.start(debug=False)
