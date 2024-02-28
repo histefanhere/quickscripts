@@ -16,17 +16,19 @@ function setActiveGroup(group) {
     for (var i = 0; i < groups.length; i++) {
         if (groups[i].key == group) {
             active_group = groups[i];
-            
+
             // Groups header
             let html = '<tr>';
-            for (let gi = 0; gi < groups.length; gi++) {
-                let group = groups[gi];
-                let className = 'text-secondary';
-                if (group === active_group) {
-                    className = 'text-primary';
+            if (groups.length > 1) {
+                for (let gi = 0; gi < groups.length; gi++) {
+                    let group = groups[gi];
+                    let className = 'text-secondary';
+                    if (group === active_group) {
+                        className = 'text-primary';
+                    }
+                    html += `<td><span class="fs-1 me-2 ${className}">${group.key.toUpperCase()}</span></td>
+                    <td><span class="fs-3 me-3 ${className}">${group.name}</span></td>`;
                 }
-                html += `<td><span class="fs-1 me-2 ${className}">${group.key.toUpperCase()}</span></td>
-                <td><span class="fs-3 me-3 ${className}">${group.name}</span></td>`;
             }
             html += '</tr>';
             document.getElementById('table-groups').innerHTML = html;
@@ -50,7 +52,7 @@ function setActiveGroup(group) {
             </tr>`;
             document.getElementById('table-scripts').innerHTML = html;
 
-            pywebview.api.fit_window(document.body.scrollWidth, document.body.scrollHeight);
+            pywebview.api.fit_window(document.body.scrollWidth + 1, document.body.scrollHeight + 1);
             return;
         }
     }
