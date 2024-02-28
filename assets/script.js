@@ -2,7 +2,8 @@
 var groups = [];
 var active_group = null;
 var maxRows = null;
-var countdown = 10;
+var initialCountdown = 10;
+var countdown = initialCountdown;
 
 function setActiveGroup(group) {
     if (active_group != null && group === active_group.key) {
@@ -10,7 +11,7 @@ function setActiveGroup(group) {
     }
 
     // Reset the countdown whenever the group is changed
-    countdown = 10;
+    countdown = initialCountdown;
 
     for (var i = 0; i < groups.length; i++) {
         if (groups[i].key == group) {
