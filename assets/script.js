@@ -1,19 +1,56 @@
 
-var active_group = null;
 var groups = [];
-var scripts = [];
-
+var active_group = null;
+var maxRows = null;
+var countdown = 10;
 
 function setActiveGroup(group) {
-    if (group === active_group) {
+    if (active_group != null && group === active_group.key) {
         return;
     }
+
+    // Reset the countdown whenever the group is changed
+    countdown = 10;
+
     for (var i = 0; i < groups.length; i++) {
         if (groups[i].key == group) {
-            active_group = group;
-            scripts = groups[i].scripts;
-            // TODO: update the UI to reflect the new active group
-            console.log('Active group: ' + active_group);
+            active_group = groups[i];
+            
+            // Groups header
+            let html = '<tr>';
+            for (let gi = 0; gi < groups.length; gi++) {
+                let group = groups[gi];
+                let className = 'text-secondary';
+                if (group === active_group) {
+                    className = 'text-primary';
+                }
+                html += `<td><span class="fs-1 me-2 ${className}">${group.key.toUpperCase()}</span></td>
+                <td><span class="fs-3 me-3 ${className}">${group.name}</span></td>`;
+            }
+            html += '</tr>';
+            document.getElementById('table-groups').innerHTML = html;
+
+            // Scripts in the group
+            let scripts = active_group.scripts;
+            html = '';
+            for (let ri = 0; ri < Math.min(maxRows, scripts.length); ri++) {
+                let row = `<tr>`;
+                for (let ci = 0; ci < Math.floor( (scripts.length - ri - 1) / maxRows) + 1; ci++) {
+                    let script = scripts[ri + maxRows * ci];
+                    console.log(ri, ci, script);
+                    row += `<td><span class="fs-1 me-2">${script.key.toUpperCase()}</span></td><td><span class="fs-3 me-5">${script.name}</span></td>`;
+                }
+                row += `</tr>`;
+                html += row;
+            }
+            html += `
+            <tr>
+                <td><span class="fs-1 me-2 text-danger">Q</span></td>
+                <td><span class="fs-3 me-5 text-danger">Quit (<span id="countdown">${countdown}</span>)</span></td>
+            </tr>`;
+            document.getElementById('table-scripts').innerHTML = html;
+
+            setTimeout(() => { pywebview.api.fit_window(document.body.scrollWidth, document.body.scrollHeight); }, 50);
             return;
         }
     }
@@ -24,21 +61,28 @@ function setActiveGroup(group) {
 document.addEventListener('keydown', function(event) {
     if (event.key.toLowerCase() === 'q') {
         pywebview.api.close();
+        return;
     }
-    else {
-        // pywebview.api.parse_key(event.key, event.shiftKey)
-        for (var i = 0; i < scripts.length; i++) {
-            if (scripts[i].key === event.key) {
-                console.log(scripts[i].script);
-                pywebview.api.execute(scripts[i].command);
-            }
+
+    // Check if it is a group
+    for (let i = 0; i < groups.length; i++) {
+        if (groups[i].key === event.key) {
+            setActiveGroup(event.key);
+            return;
+        }
+    }
+
+    // Check if it is a script
+    let scripts = active_group.scripts;
+    for (var i = 0; i < scripts.length; i++) {
+        if (scripts[i].key === event.key) {
+            pywebview.api.execute(scripts[i].command);
+            return;
         }
     }
 });
 
 
-// var countdown = 10;
-var countdown = 100;
 setInterval(function() {
     countdown--;
     document.getElementById('countdown').innerText = countdown;
@@ -49,15 +93,13 @@ setInterval(function() {
 
 
 window.addEventListener('pywebviewready', function() {
-    pywebview.api.get_groups().then(function(response) {
-        groups = response;
-        console.log('Groups: ' + groups);
-        setActiveGroup(1);
-        
-        // TODO: figure out why this is still not the right size - a little too big
-        let width = document.body.scrollWidth;
-        let height = document.body.scrollHeight;
-        console.log(width); console.log(height);
-        pywebview.api.fit_window(width, height);
+    // TODO: Make these promises resolve together instead of one after another
+    pywebview.api.get_rows().then(function (response) {
+        maxRows = response;
+
+        pywebview.api.get_groups().then(function(response) {
+            groups = response;
+            setActiveGroup(1);
+        });
     });
 });

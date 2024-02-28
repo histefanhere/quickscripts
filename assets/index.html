@@ -15,43 +15,8 @@
             }
         </style>
         <div style="overflow: auto;">
-            <table class="m-3 mb-0">
-                <tbody>
-                    <tr>
-                        <td><span class="fs-1 me-2 text-primary">1</span></td>
-                        <td><span class="fs-3 me-3 text-primary">Most Used</span></td>
-
-                        <td><span class="fs-1 me-2 text-secondary">2</span></td>
-                        <td><span class="fs-3 me-3 text-secondary">Browser</span></td>
-
-                        <td><span class="fs-1 me-2 text-secondary">3</span></td>
-                        <td><span class="fs-3 me-3 text-secondary">Google</span></td>
-                    </tr>
-                </tbody>
-            </table>
-            <table class="m-3 mt-0">
-                <tbody>
-                    <tr>
-                        <td><span class="fs-1 me-2">A</span></td>
-                        <td><span class="fs-3 me-5">Apple</span></td>
-
-                        <td><span class="fs-1 me-2">L</span></td>
-                        <td><span class="fs-3 me-5">Lemmings</span></td>
-                    </tr>
-                    <tr>
-                        <td><span class="fs-1 me-2">B</span></td>
-                        <td><span class="fs-3 me-5">Better Discord</span></td>
-                    </tr>
-                    <tr>
-                        <td><span class="fs-1 me-2">I</span></td>
-                        <td><span class="fs-3 me-5">Internet</span></td>
-                    </tr>
-                    <tr>
-                        <td><span class="fs-1 me-2 text-danger">Q</span></td>
-                        <td><span class="fs-3 me-5 text-danger">Quit (<span id="countdown">10</span>)</span></td>
-                    </tr>
-                </tbody>
-            </table>
+            <table id="table-groups" class="m-3 mb-0"></table>
+            <table id="table-scripts" class="m-3 mt-0"></table>
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
