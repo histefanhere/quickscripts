@@ -101,7 +101,7 @@ window.addEventListener('pywebviewready', function() {
 
         pywebview.api.get_groups().then(function(response) {
             groups = response;
-            setActiveGroup(1);
+            setActiveGroup(groups[0].key);
         });
     });
 });

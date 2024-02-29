@@ -8,14 +8,10 @@
 ##########################
 
 # Here you can specify some additional configuration that will alter the behaviour of the program.
-# Obviously, because of this you can't have a quickscript called "config"
 config:
-  # Here you can define options which will affect all machines:
-  awesomeness: 100 # All technology should be awesome!
-
-  # 0 - DEFAULT VALUE - Light mode
-  # 1 - Dark mode
-  darkmode: 0
+  # false - DEFAULT VALUE - Light mode
+  # true - Dark mode
+  darkmode: true
 
   # Any positive integer, represents the number of rows of scripts (Defaults to 5 rows)
   rows: 5
@@ -24,31 +20,29 @@ config:
   replace:
     firefox_path: C:\Program Files\Mozilla Firefox\firefox.exe
 
-  # Or you can sub-categorize them by their machine names:
+  # Or you can sub-categorize them by their device names:
   my_windows_computer:
-    # Specifies wether the window will have a border or not. Looks _a lot_ nicer without it, but can be finiky sometimes
-    # Depending on your system, you will have to use either 1 or 2.
-    # 0 - DEFAULT VALUE - Will have a border and behave as normal.
-    # 1 - No border, will also snap to the corner for some reason. LINUX ONLY
-    # 2 - No border. WINDOWS ONLY
-    borderless: 0
+    rows: 10
 
+
+groups:
 
 # "Webpages" here is called a group. Groups, well, group scripts togeather
 # Use them to better organize all your different scripts.
-Webpages:
+- title: Webpages
+  scripts:
 
   ###########
   # EXAMPLE 1
   ###########
 
   # This is the most basic kind of use, where a key will always trigger the same command.
-  # You specify the `key` which will trigger the command, and the `cmd` itself.
+  # You specify the `key` which will trigger the command, and the `command` itself.
   # The same command will be executed across all machines this is configured in.
   # (Most useful if you only have one machine, or a command is identical across mutliple)
-  Browser:
+  - name: Browser
     key: b
-    cmd: /your/path/to/anything/if/required/firefox.exe
+    command: /your/path/to/anything/if/required/firefox.exe
 
   ###########
   # EXAMPLE 2
@@ -57,15 +51,19 @@ Webpages:
   # If however you have multiple machines with different OS's on them which run commands differently...
   # ...you can specify the machines names as sub categories to the `cmd`, and each machine will run their...
   # ...coresponding commands.
-  Facebook:
+  - name: Facebook
     key: f
-    cmd:
+    command:
       my_windows_computer: C:\Program Files\facebook.exe
       my_linux_machine: sh /home/user/games/facebook.sh
 
 
 # Here's another group that I've called "games" to group all my games togeather.
-Games:
+# Also, this group has a custom key! All the other will have numbers assigned to them by default, but this can be overridden
+# by providing a key for the group.
+- title: Games
+  key: g
+  scripts:
 
   ###########
   # EXAMPLE 3
@@ -73,32 +71,32 @@ Games:
 
   # You may also have some scripts which you only have on one machine. In that case, you can also _only_ specify...
   # ...that machine and the quickscript will not be visible on all other machines.
-  The Best Video Game:
+  - name: The Best Video Game
     key: v
-    cmd:
+    command:
       my_windows_computer: C:\Program Files\TheBestVideoGame.exe
 
 
   # Notice here how we're able to use the key "f" despite using the f key previously for the Facebook script.
   # That's because it's in a different group!
-  Fire Boy % Water Girl:
+  - name: Fire Boy % Water Girl
     key: f
-    cmd:
+    command:
       my_windows_computer: $firefox_path www.miniclip.com
 
-###########
-# EXAMPLE 4
-###########
+  ###########
+  # EXAMPLE 4
+  ###########
 
-# This is an example of how you can use the `replace` config to shorten your configuration file and make it more readable!
-some_website_1:
-  key: x
-  cmd:
-    # Here, $firefox_path will be replaced with the defined string we set in the beginning of the file. Note the dollar sign!
-    my_windows_computer: $firefox_path www.some_website_1.com
+  # This is an example of how you can use the `replace` config to shorten your configuration file and make it more readable!
+  - name: some_website_1
+    key: x
+    command:
+      # Here, $firefox_path will be replaced with the defined string we set in the beginning of the file. Note the dollar sign!
+      my_windows_computer: $firefox_path www.some_website_1.com
 
-some_website_2:
-  key: y
-  cmd:
-    # Same here. The dollar sign tells the code to replace it. Without it, the string would literally mean "firefox_path"
-    my_windows_computer: $firefox_path www.some_website_2.com
+  - name: some_website_2
+    key: y
+    command:
+      # Same here. The dollar sign tells the code to replace it. Without it, the string would literally mean "firefox_path"
+      my_windows_computer: $firefox_path www.some_website_2.com

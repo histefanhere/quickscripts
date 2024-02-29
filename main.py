@@ -4,7 +4,8 @@ import subprocess, argparse, os, yaml, time
 import webview
 
 parser = argparse.ArgumentParser(description="Quickly Run your favourite scripts and applications.\nFor aditional help, check the README.")
-parser.add_argument("--configure", action="store_true", help="Set some options of the script")
+parser.add_argument('--scripts', dest='scripts_filename', help="Location of scripts config file. Defaults to python script directory.")
+parser.add_argument('--id', dest='device_id', help="Device ID for device-specific scripts.")
 args = parser.parse_args()
 
 valid_keys = "abcdefghijklmnoprstuvwxyz,.<>/?;:'\"[]{}-_=+!@#$%^&*()`~"
@@ -27,101 +28,60 @@ class Script:
 
 
 class Config():
-    def get_file(self, filename):
-        return os.path.join(os.path.dirname(__file__), filename)
-    
-    def load_yaml(self, file):
-        try:
-            data = yaml.safe_load(file.read())
-        except Exception as e:
-            file.close()
-            error(f"Error in parsing YAML file {file.name}:\n\n" + str(e))
-        else:
-            return data
-
     def __init__(self):
-        if args.configure:
-            self.configuration_wizard()
+        self.groups = []
+        self.config = {}
+        self.device_id = args.device_id
 
-        if not os.path.exists('config.yaml'):
-            self.configuration_wizard()
+        self.scripts_filename = args.scripts_filename
+        if self.scripts_filename is None:
+            self.scripts_filename = './scripts.yaml'
+            if not os.path.exists(self.scripts_filename):
+                # TODO: create default file
+                pass
 
-        with open(self.get_file('config.yaml'), 'r') as file:
-            data = self.load_yaml(file)
-            self.data = data
+        with open(os.path.join(os.path.dirname(__file__), self.scripts_filename), 'r') as file:
+            try:
+                data = yaml.safe_load(file.read())
+            except Exception as e:
+                file.close()
+                error(f"Error in parsing YAML file {file.name}:\n\n" + str(e))
 
-            self.name, self.scripts_filename = data['name'], data['scripts']
-        
-        with open(self.get_file(self.scripts_filename), 'r') as file:
-            data = self.load_yaml(file)
-            groups_raw = {key: value for key, value in data.items() if key != "config"}
+            # groups_raw = {key: value for key, value in data.items() if key != "config"}
+            groups_raw = data.get('groups', [])
+            self.config = data.get('config', {})
 
-            self.options = {}
-            if 'config' in data:
-                self.options = data['config']
+            self.parse_groups(groups_raw)
 
-        self.groups = self.parse_groups(groups_raw)
-
-    def configuration_wizard(self):
-        if not os.path.exists('config.yaml'):
-            with open(self.get_file('config.yaml'), 'w+') as file:
-                file.write('scripts: .\scripts.yaml')
-
-        with open(self.get_file('config.yaml'), 'r+') as file:
-            # TODO: Slap a try around this
-            data = self.load_yaml(file)
-            if data == None:
-                data = {}
-
-        print("Welcome to the quickscripts configuration wizard!")
-        time.sleep(2)
-        print("Here you'll be able to set some key values that the script needs to opearte.")
-        time.sleep(3)
-
-        print("\nLet's start with an easy one: What's the name of this machine?")
-
-        prompt = "(leave blank for no name): "
-        if 'name' in data:
-            prompt = f"(leave blank for current value, '{data['name']}'): "
-        name = input(prompt)
-        if not name == "":
-            data['name'] = name
-
-        print(f"Awesome, the name of this machine is now {data['name']}!")
-        time.sleep(3)
-
-        print("\nNow you'll need to tell me where I can find the scripts file")
-        time.sleep(2)
-        scripts = input(f"(leave blank for current value, '{data['scripts']}'): ")
-        if not scripts == "":
-            data['scripts'] = scripts
-
-        print(f"Thanks, now I know that the scripts file is located at {data['scripts']}!")
-        time.sleep(3)
-
-        print("And that's it! Try to run this script without any arguments now, and thank you for using quickscripts! :)")
-        with open(self.get_file('config.yaml'), 'w+') as file:
-            file.write(yaml.dump(data))
-
-        exit()
-
-    def get_option(self, value, default):
+    def get_config(self, option, default):
         """Get an option value, if it's available, from the user-defined `config` field in scripts.yaml"""
-        if value in self.options:
-            return self.options[value]
+        if option in self.config:
+            return self.config[option]
         else:
-            if self.name in self.options:
-                if value in self.options[self.name]:
-                    return self.options[self.name][value]
+            if self.device_id in self.config:
+                if option in self.config[self.device_id]:
+                    return self.config[self.device_id][option]
         return default
 
     def parse_groups(self, groups_raw):
-        """Parse the groups from the yaml configuration"""
-        groups = []
+        """Parse the groups from the yaml configuration."""
         group_key = 1
-        for group_name, scripts in groups_raw.items():
-            group = Group(group_name, str(group_key), [])
-            for script_name, script in scripts.items():
+
+        for group_raw in groups_raw:
+            title = group_raw['title']
+            if 'key' in group_raw.keys():
+                key = str(group_raw['key'])
+            else:
+                if group_key > 9:
+                    error("You cannot have more than 9 un-keyed Groups!")
+                key = str(group_key)
+                group_key += 1
+
+            group = Group(title, key, [])
+            self.groups.append(group)
+
+            for script in group_raw['scripts']:
+                name = str(script['name'])
                 key = str(script['key'])
 
                 if key.lower() in invalid_keys:
@@ -133,45 +93,28 @@ class Config():
                 if key in [script.key for script in group.scripts]:
                     error(f"Key {key} has been used more than once in the same script group!")
 
-                if isinstance(script['cmd'], str):
+                if isinstance(script['command'], str):
                     # Same command for all systems
-                    cmd = script['cmd']
+                    command = script['command']
                 else:
                     # See if there's one specific for this machine name
                     try:
-                        cmd = script['cmd'][self.name]
+                        command = script['command'][self.device_id]
                     except KeyError:
                         # There isn't - that's fine, just continue.
-                        continue
-
-                for replace_keyword, replace_string in self.get_option('replace', {}).items():
-                    cmd = cmd.replace(f"${replace_keyword}", replace_string)
-
-                group.scripts.append(Script(
-                    script_name,
-                    key,
-                    cmd
-                ))
-
-            group_key += 1
-
-            if len(group.scripts) == 0:
-                continue
-
-            groups.append(group)
-        
-        if len(groups) > 9:
-            error("You cannot have more than 9 Script Groups!")
-
-        return groups
-
+                        continue                
+                    
+                for replace_keyword, replace_string in self.get_config('replace', {}).items():
+                    command = command.replace(f"${replace_keyword}", replace_string)
+                
+                group.scripts.append(Script(name, key, command))
 
 class Api:
     def __init__(self):
         self.config = Config()
         
     def get_rows(self):
-        return self.config.get_option("rows", 5)
+        return self.config.get_config("rows", 5)
 
     def get_groups(self):
         return [asdict(x) for x in self.config.groups]
