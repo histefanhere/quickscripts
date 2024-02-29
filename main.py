@@ -115,6 +115,9 @@ class Api:
         
     def get_rows(self):
         return self.config.get_config("rows", 5)
+    
+    def get_theme(self):
+        return self.config.get_config('theme', 'auto')
 
     def get_groups(self):
         return [asdict(x) for x in self.config.groups]

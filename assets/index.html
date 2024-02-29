@@ -24,6 +24,22 @@
                 font-size: 1.5rem !important;
             }
         </style>
+        <script>
+            (() => {
+            'use strict'
+
+            window.addEventListener('pywebviewready', function() {
+                pywebview.api.get_theme().then(function (theme) {
+                    if (theme === 'auto') {
+                        document.documentElement.setAttribute('data-bs-theme', (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'))
+                    } else {
+                        document.documentElement.setAttribute('data-bs-theme', theme)
+                    }
+                });
+            })
+
+            })()
+        </script>
         <div style="overflow: auto;">
             <table id="table-groups" class="m-3 mb-0"></table>
             <table id="table-scripts" class="m-3 mt-0"></table>

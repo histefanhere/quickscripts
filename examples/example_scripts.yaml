@@ -9,9 +9,10 @@
 
 # Here you can specify some additional configuration that will alter the behaviour of the program.
 config:
-  # false - DEFAULT VALUE - Light mode
-  # true - Dark mode
-  darkmode: true
+  # auto - DEFAULT VALUE - switches between light and dark mode based on system
+  # dark - Dark mode
+  # light - Light mode
+  theme: auto
 
   # Any positive integer, represents the number of rows of scripts (Defaults to 5 rows)
   rows: 5
