@@ -1,10 +1,12 @@
 from dataclasses import dataclass, asdict
 import math
 import subprocess, argparse, os, yaml, time
+
+import mergedeep
 import webview
 
 parser = argparse.ArgumentParser(description="Quickly Run your favourite scripts and applications.\nFor aditional help, check the README.")
-parser.add_argument('--scripts', dest='scripts_filename', help="Location of scripts config file. Defaults to python script directory.")
+parser.add_argument('--scripts', nargs="+", dest='scripts_filenames', metavar='FILENAME', help="Location of scripts config file(s). Defaults to python script directory.")
 parser.add_argument('--id', dest='device_id', help="Device ID for device-specific scripts.")
 args = parser.parse_args()
 
@@ -33,25 +35,28 @@ class Config():
         self.config = {}
         self.device_id = args.device_id
 
-        self.scripts_filename = args.scripts_filename
-        if self.scripts_filename is None:
-            self.scripts_filename = './scripts.yaml'
-            if not os.path.exists(self.scripts_filename):
-                # TODO: create default file
-                pass
+        self.scripts_filenames = args.scripts_filenames
+        if self.scripts_filenames is None:
+            self.scripts_filenames = ['./scripts.yaml']
 
-        with open(os.path.join(os.path.dirname(__file__), self.scripts_filename), 'r') as file:
-            try:
-                data = yaml.safe_load(file.read())
-            except Exception as e:
-                file.close()
-                error(f"Error in parsing YAML file {file.name}:\n\n" + str(e))
+        data = {}
+        for filename in self.scripts_filenames:
+            if not os.path.exists(os.path.join(os.path.dirname(__file__), filename)):
+                error(f"File {filename} does not exist!")
+    
+            with open(os.path.join(os.path.dirname(__file__), filename), 'r') as file:
+                try:
+                    filedata = yaml.safe_load(file.read())
+                except Exception as e:
+                    file.close()
+                    error(f"Error in parsing YAML file {file.name}:\n\n" + str(e))
+            
+            mergedeep.merge(data, filedata)            
 
-            # groups_raw = {key: value for key, value in data.items() if key != "config"}
-            groups_raw = data.get('groups', [])
-            self.config = data.get('config', {})
+        groups_raw = data.get('groups', [])
+        self.config = data.get('config', {})
 
-            self.parse_groups(groups_raw)
+        self.parse_groups(groups_raw)
 
     def get_config(self, option, default):
         """Get an option value, if it's available, from the user-defined `config` field in scripts.yaml"""
