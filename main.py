@@ -1,7 +1,10 @@
 from dataclasses import dataclass, asdict
 import math
 import subprocess, argparse, os, yaml, time
+from functools import wraps
 
+import json
+from flask import Flask, jsonify, render_template, request
 import mergedeep
 import webview
 
@@ -120,7 +123,7 @@ class Api:
         
     def get_rows(self):
         return self.config.get_config("rows", 5)
-    
+
     def get_theme(self):
         return self.config.get_config('theme', 'auto')
 
@@ -132,17 +135,64 @@ class Api:
 
     def execute(self, command):
         subprocess.Popen(command, shell=True)
-        self.close()
+        # self.close()
+        webview.windows[0].hide()
 
     def close(self):
         webview.windows[0].destroy()
+        
+    def hide(self):
+        webview.windows[0].hide()
 
+    def show(self):
+        webview.windows[0].show()
+
+gui_dir = os.path.join(os.path.dirname(__file__), 'assets')  # development path
+
+if not os.path.exists(gui_dir):  # frozen executable path
+    gui_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'assets')
+
+server = Flask(__name__, static_folder=gui_dir, template_folder=gui_dir)
+server.config['SEND_FILE_MAX_AGE_DEFAULT'] = 1  # disable caching
+
+
+# def verify_token(function):
+#     @wraps(function)
+#     def wrapper(*args, **kwargs):
+#         data = json.loads(request.data)
+#         token = data.get('token')
+#         if token == webview.token:
+#             return function(*args, **kwargs)
+#         else:
+#             raise Exception('Authentication error')
+
+#     return wrapper
+
+
+# @server.after_request
+# def add_header(response):
+#     response.headers['Cache-Control'] = 'no-store'
+#     return response
+
+@server.route('/')
+def landing():
+    """
+    Render index.html. Initialization is performed asynchronously in initialize() function
+    """
+    return render_template('index.html', token=webview.token)
+
+@server.route('/test')
+def test():
+    print("showing window...")
+    webview.windows[0].show()
+    return "<h1>Showing window</h1>"
 
 if __name__ == '__main__':
     api = Api()
     window = webview.create_window(
         'Quickscripts',
-        'assets/index.html',
+        server,
+        # 'assets/index.html',
         js_api=api,
         frameless=True,
         on_top=True,
@@ -150,6 +200,9 @@ if __name__ == '__main__':
         y=0,
         width=1000,
         height=1000,
-        transparent=True
+        transparent=True,
+        # hidden=True,
+        http_port=9191,
     )
-    webview.start(debug=False)
+    # webview.start()
+    webview.start(lambda win: win.hide(), window, debug=False)
