@@ -2,6 +2,8 @@
 var groups = [];
 var active_group = null;
 var maxRows = null;
+
+var doCountdown = true;
 var initialCountdown = 10;
 var countdown = initialCountdown;
 
@@ -79,6 +81,7 @@ document.addEventListener('keydown', function(event) {
     for (var i = 0; i < scripts.length; i++) {
         if (scripts[i].key === event.key) {
             pywebview.api.execute(scripts[i].command);
+            doCountdown = false;
             return;
         }
     }
@@ -86,10 +89,12 @@ document.addEventListener('keydown', function(event) {
 
 
 setInterval(function() {
-    countdown--;
-    document.getElementById('countdown').innerText = countdown;
-    if (countdown === 0) {
-        pywebview.api.close();
+    if (doCountdown) {
+        countdown--;
+        document.getElementById('countdown').innerText = countdown;
+        if (countdown === 0) {
+            pywebview.api.close();
+        }
     }
 }, 2000);
 

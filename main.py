@@ -117,6 +117,7 @@ class Config():
                 
                 group.scripts.append(Script(name, key, command))
 
+
 class Api:
     def __init__(self):
         self.config = Config()
@@ -135,74 +136,50 @@ class Api:
 
     def execute(self, command):
         subprocess.Popen(command, shell=True)
-        # self.close()
-        webview.windows[0].hide()
+        self.close()
 
     def close(self):
-        webview.windows[0].destroy()
-        
-    def hide(self):
+        # If no windows exist, annoyingly the program stops. So one always needs to exist (and be hidden),
+        # and gets destroyed when a new one is created.
         webview.windows[0].hide()
 
-    def show(self):
-        webview.windows[0].show()
 
-gui_dir = os.path.join(os.path.dirname(__file__), 'assets')  # development path
-
-if not os.path.exists(gui_dir):  # frozen executable path
-    gui_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'assets')
-
-server = Flask(__name__, static_folder=gui_dir, template_folder=gui_dir)
-server.config['SEND_FILE_MAX_AGE_DEFAULT'] = 1  # disable caching
+api = Api()
 
 
-# def verify_token(function):
-#     @wraps(function)
-#     def wrapper(*args, **kwargs):
-#         data = json.loads(request.data)
-#         token = data.get('token')
-#         if token == webview.token:
-#             return function(*args, **kwargs)
-#         else:
-#             raise Exception('Authentication error')
-
-#     return wrapper
-
-
-# @server.after_request
-# def add_header(response):
-#     response.headers['Cache-Control'] = 'no-store'
-#     return response
-
-@server.route('/')
-def landing():
-    """
-    Render index.html. Initialization is performed asynchronously in initialize() function
-    """
-    return render_template('index.html', token=webview.token)
-
-@server.route('/test')
-def test():
-    print("showing window...")
-    webview.windows[0].show()
-    return "<h1>Showing window</h1>"
-
-if __name__ == '__main__':
-    api = Api()
-    window = webview.create_window(
+def create_window():
+    webview.create_window(
         'Quickscripts',
         server,
-        # 'assets/index.html',
         js_api=api,
         frameless=True,
         on_top=True,
         x=0,
         y=0,
-        width=1000,
-        height=1000,
+        width=10,
+        height=10,
         transparent=True,
-        # hidden=True,
         http_port=9191,
     )
-    # webview.start()
-    webview.start(lambda win: win.hide(), window, debug=False)
+
+
+assets_dir = os.path.join(os.path.dirname(__file__), 'assets')  # development path
+if not os.path.exists(assets_dir):  # frozen executable path
+    assets_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'assets')
+
+server = Flask(__name__, static_folder=assets_dir, template_folder=assets_dir)
+
+@server.route('/')
+def landing():
+    return render_template('index.html', token=webview.token)
+
+@server.route('/open')
+def test():
+    create_window()
+    webview.windows[0].destroy()
+    return "<h1>Showing window</h1>"
+
+
+if __name__ == '__main__':
+    create_window()
+    webview.start()
